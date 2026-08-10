@@ -1,0 +1,11 @@
+Genres,n_juegos,media_pct_positivas,mediana_pct_positivas,media_antiguedad,media_precio_ajustado
+Casual,2230,84.96,88.22,6.58,6.74
+Indie,5561,83.79,86.74,6.86,7.7
+Adventure,4030,83.32,86.22,6.79,8.69
+Action,4275,81.63,84.59,7.47,9.4
+RPG,2357,81.93,84.42,6.52,10.32
+Simulation,2397,81.21,84.35,6.01,10.49
+Racing,338,81.08,83.8,7.59,9.95
+Strategy,2129,80.9,83.51,7.07,9.74
+Sports,329,80.87,83.12,6.88,12.83
+Massively Multiplayer,176,73.13,76.39,5.82,10.97

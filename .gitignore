@@ -1,0 +1,13 @@
+# Crudo de Steam (~400 MB) - excede lo razonable para un repo de portafolio.
+# Descargar desde: https://www.kaggle.com/datasets/fronkongames/steam-games-dataset
+datos/crudos/steam_fronkongames_catalogo-historico_*.csv
+
+# Datos limpios (~75 MB): son derivados, no fuentes.
+# Se regeneran con `python notebooks/procesar.py` a partir del crudo.
+datos/limpios/
+
+# Basura de SO / entornos
+.DS_Store
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
