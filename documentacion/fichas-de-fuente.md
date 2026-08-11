@@ -1,76 +1,77 @@
-# Fichas de fuente de datos — Caso Steam
+# Data source records — Steam case
 
-## Fuente 1: Steam Games Dataset (fronkongames)
+## Source 1: Steam Games Dataset (fronkongames)
 
-- **Origen:** tercera parte — agregador (Kaggle), construido a partir de la Steam Web API oficial +
-  SteamSpy (estimaciones no oficiales de "owners").
-- **URL o ubicación:** kaggle.com/datasets/fronkongames/steam-games-dataset
-- **Fecha de descarga:** 2026-07-28
-- **Licencia:** CC BY 4.0 — permite uso y redistribución con atribución. Se citará en el README público.
-- **Periodo cubierto:** 1997-06-30 a 2026-12-01 (incluye 2 juegos con fecha de lanzamiento futura,
-  aún no publicados a la fecha de descarga).
-- **Granularidad:** una fila = un juego (`AppID` único) listado en la tienda de Steam.
-- **Volumen:** 125.855 filas × 40 columnas reales (la cabecera cruda declara 39 — ver bug abajo).
-- **Formato:** CSV, ~400 MB.
+- **Origin:** third party — aggregator (Kaggle), built from the official Steam Web API +
+  SteamSpy (unofficial "owners" estimates).
+- **URL or location:** kaggle.com/datasets/fronkongames/steam-games-dataset
+- **Download date:** 2026-07-28
+- **Licence:** CC BY 4.0 — allows use and redistribution with attribution. Cited in the public
+  README.
+- **Period covered:** 1997-06-30 to 2026-12-01 (includes 2 games with a future release date, not
+  yet published as of the download date).
+- **Granularity:** one row = one game (unique `AppID`) listed on the Steam store.
+- **Volume:** 125,855 rows × 40 real columns (the raw header declares 39 — see bug below).
+- **Format:** CSV, ~400 MB.
 
 ### ROCCC
-| Letra | Evaluación | Detalle |
+| Letter | Assessment | Detail |
 |---|---|---|
-| **R**eliable | Medio | `price`, `positive`/`negative` vienen de la API oficial de Steam (confiables). `estimated_owners` viene de SteamSpy, que estima por algoritmo, no por ventas reales confirmadas por Valve. |
-| **O**riginal | Medio-bajo | Es una fuente de tercera parte (agregador), no un descargable directo de Valve. Es rastreable: el propio dataset documenta que combina Steam Web API + SteamSpy. |
-| **C**omprehensive | Alto para esta pregunta | Contiene `price`, `genres`, `positive`, `negative`, que es todo lo que la pregunta de fase 1 exige. Falta reseñas individuales fechadas (solo el acumulado por juego). |
-| **C**urrent | Alto | Descargado el mismo día del análisis; el dataset se actualiza periódicamente en origen. |
-| **C**ited | Alto | Ficha pública en Kaggle con metodología, autor y licencia declarados. |
+| **R**eliable | Medium | `price`, `positive`/`negative` come from the official Steam API (reliable). `estimated_owners` comes from SteamSpy, which estimates algorithmically, not from real sales confirmed by Valve. |
+| **O**riginal | Medium-low | It's a third-party source (aggregator), not a direct download from Valve. It's traceable: the dataset itself documents that it combines the Steam Web API + SteamSpy. |
+| **C**omprehensive | High for this question | Contains `price`, `genres`, `positive`, `negative`, which is everything the Phase 1 question requires. Missing: dated individual reviews (only the per-game cumulative total). |
+| **C**urrent | High | Downloaded the same day as the analysis; the dataset is updated periodically at the source. |
+| **C**ited | High | Public Kaggle listing with methodology, author and licence declared. |
 
-**Fallas declaradas:** Originalidad (tercera parte, no Valve directo) y confiabilidad parcial de
-`estimated_owners` (rango estimado, no cifra exacta confirmada). Ambas se documentan como
-limitación en el informe, no descalifican la fuente.
+**Declared failures:** Originality (third party, not straight from Valve) and partial reliability
+of `estimated_owners` (an estimated range, not a Valve-confirmed exact figure). Both are
+documented as limitations in the report; neither disqualifies the source.
 
-- **PII presente:** No. Son metadatos de catálogo de juegos, sin datos personales de usuarios.
-- **Seguridad:** archivo estático descargado, vive localmente en `datos/crudos/`, sin credenciales ni
-  API en vivo involucradas.
-- **Accesibilidad / reproducibilidad:** el archivo crudo (~400 MB) no se sube al repo público de
-  portafolio. El README público enlazará directamente a la fuente en Kaggle para que cualquier
-  persona pueda reproducir la descarga. Decisión confirmada con el usuario.
+- **PII present:** No. This is game catalogue metadata, no personal user data.
+- **Security:** static downloaded file, lives locally in `datos/crudos/`, no credentials or live
+  API involved.
+- **Accessibility / reproducibility:** the raw file (~400 MB) is not uploaded to the public
+  portfolio repository. The public README links directly to the Kaggle source so anyone can
+  reproduce the download. Decision confirmed with the user.
 
-**Limitaciones conocidas:**
-1. **Bug de cabecera confirmado:** la cabecera cruda declara 39 nombres de columna, pero cada fila
-   de datos trae 40 campos. El nombre `DiscountDLC count` en la posición 7 en realidad corresponde a
-   dos columnas fusionadas (`Discount` y `DLC count`), lo que desalineaba todo lo posterior. Se
-   corrigió en esta fase insertando el nombre faltante antes de cargar (detalle en la prueba de
-   integridad, abajo). **Esta corrección debe repetirse igual en fase 3 al cargar el crudo — no está
-   resuelta en el archivo, solo diagnosticada.**
-2. `estimated_owners` viene en rangos categóricos (ej. "0 - 20000"), no en cifra puntual.
-3. No incluye reseñas de texto ni fechas individuales de reseña — impide medir evolución temporal
-   real del sentimiento; la fase 1 ya adoptó "antigüedad del juego" como proxy.
+**Known limitations:**
+1. **Confirmed header bug:** the raw header declares 39 column names, but every data row carries
+   40 fields. The name `DiscountDLC count` at position 7 actually corresponds to two merged
+   columns (`Discount` and `DLC count`), which misaligned everything after it. Fixed in this
+   phase by inserting the missing name before loading (detail in the integrity check below).
+   **This fix must be repeated identically in Phase 3 when loading the raw file — it is not
+   fixed in the file itself, only diagnosed.**
+2. `estimated_owners` comes in categorical ranges (e.g. "0 - 20000"), not a point figure.
+3. No review text or individual review dates — this prevents measuring the real time evolution of
+   sentiment; Phase 1 already adopted "game age" as a proxy.
 
 ---
 
-## Fuente 2: CPI-U — Bureau of Labor Statistics (EE. UU.)
+## Source 2: CPI-U — US Bureau of Labor Statistics
 
-- **Origen:** primera parte — agencia de gobierno de EE. UU. (Bureau of Labor Statistics).
-- **URL o ubicación:** bls.gov/cpi/data.htm — serie `CUUR0000SA0` (CPI-U, EE. UU., no ajustada
-  estacionalmente, base 1982-84=100).
-- **Fecha de descarga:** pendiente — se descargará en fase 3 al momento de aplicar el ajuste.
-- **Licencia:** dominio público (obra del gobierno de EE. UU.).
-- **Periodo cubierto:** 1913 a la fecha (junio 2026 disponible al momento de esta ficha); cubre
-  sobradamente el rango 1997-2026 del catálogo de Steam.
-- **Granularidad:** índice mensual y promedio anual, EE. UU. urbano agregado.
-- **Volumen:** una fila por mes/año publicado.
-- **Formato:** tabla HTML / texto plano descargable desde BLS; también accesible por API pública.
+- **Origin:** first party — US government agency (Bureau of Labor Statistics).
+- **URL or location:** bls.gov/cpi/data.htm — series `CUUR0000SA0` (CPI-U, US city average, not
+  seasonally adjusted, base 1982-84=100).
+- **Download date:** pending — will be downloaded in Phase 3 when applying the adjustment.
+- **Licence:** public domain (US government work).
+- **Period covered:** 1913 to date (June 2026 available as of this record); comfortably covers
+  the Steam catalogue's 1997-2026 range.
+- **Granularity:** monthly index and annual average, aggregated US urban.
+- **Volume:** one row per month/year published.
+- **Format:** downloadable HTML table / plain text from BLS; also accessible via a public API.
 
 ### ROCCC
-| Letra | Evaluación | Detalle |
+| Letter | Assessment | Detail |
 |---|---|---|
-| **R**eliable | Alto | Metodología oficial, pública y auditada del gobierno de EE. UU. |
-| **O**riginal | Alto | Fuente primaria directa, no un agregador. |
-| **C**omprehensive | Alto para este uso | Solo se necesita el índice general anual para deflactar precios; el CPI-U lo cubre. |
-| **C**urrent | Alto | Se publica mensualmente; el dato más reciente es abril 2026. |
-| **C**ited | Alto | Documentación pública de metodología en bls.gov. |
+| **R**eliable | High | Official, public, audited US government methodology. |
+| **O**riginal | High | Direct primary source, not an aggregator. |
+| **C**omprehensive | High for this use | Only the general annual index is needed to deflate prices; CPI-U covers it. |
+| **C**urrent | High | Published monthly; the most recent figure is April 2026. |
+| **C**ited | High | Public methodology documentation at bls.gov. |
 
-**Aprobada por el usuario el 2026-07-28** como segunda fuente para el ajuste por inflación de la
-fase 1 (precio ajustado por inflación). No falla ninguna letra de ROCCC.
+**Approved by the user on 2026-07-28** as the second source for the Phase 1 inflation adjustment
+(inflation-adjusted price). Fails no ROCCC letter.
 
-- **PII presente:** No.
-- **Licencia / privacidad / seguridad / accesibilidad:** sin restricciones — dominio público,
-  descargable libremente, cualquiera puede reproducir el acceso.
+- **PII present:** No.
+- **Licence / privacy / security / accessibility:** no restrictions — public domain, freely
+  downloadable, anyone can reproduce the access.

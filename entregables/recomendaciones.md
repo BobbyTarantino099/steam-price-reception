@@ -1,169 +1,165 @@
-# Recomendaciones — Precio y recepción en Steam
+# Recommendations — Price and reception on Steam
 
-**Caso:** ¿Qué combinaciones de género y franja de precio en Steam sostienen mejor recepción?
-**Cliente:** Comité de inversión de un fondo enfocado en videojuegos (cliente ficticio).
-**Fecha:** 2026-07-28
-**Base de evidencia:** 9.048 juegos de pago con ≥500 reseñas (23.822 filas juego-género),
-catálogo histórico de Steam. Tablas: `salidas/tablas/genero_x_franja_precio.csv` y
+**Case:** Which genre and price-band combinations on Steam sustain the best reception?
+**Client:** Investment committee of a video-game-focused fund (fictional client).
+**Date:** 2026-07-28
+**Evidence base:** 9,048 paid games with ≥500 reviews (23,822 game-genre rows), Steam's
+historical catalogue. Tables: `salidas/tablas/genero_x_franja_precio.csv` and
 `salidas/tablas/resumen_por_genero.csv`.
 
 ---
 
-## De hallazgo a insight a recomendación
+## From finding to insight to recommendation
 
-| Hallazgo (fase 4) | Insight (qué significa para el fondo) | Recomendación |
+| Finding (Phase 4) | Insight (what it means for the fund) | Recommendation |
 |---|---|---|
-| La franja más barata (Q1, ≤3,25 USD reales) es la de peor recepción en los 10 géneros | Precio bajo no compra recepción; en Steam funciona más como señal de producto de bajo presupuesto que como palanca de adopción | R2 — usar la posición de precio del catálogo como filtro de cribado |
-| La mejor recepción se concentra en Q3 (6,46–12,36 USD) o Q4 (>12,36 USD), nunca en Q1 ni Q2 | Existe una "zona de precio" defendible; los estudios que ya operan en ella tienen validado su encaje precio-producto | R1 y R2 |
-| Adventure, Indie y Casual combinan mejor efecto de franja, volumen y recepción absoluta | Son los géneros donde la tesis "precio medio-alto + buena recepción" tiene más sustento y más objetivos disponibles para invertir | R1 — concentrar la due diligence ahí |
-| Massively Multiplayer tiene la peor recepción de los 10 géneros (mediana 76,4%), patrón no monótono y n=176 | No es un "no", es un "no lo sabemos con estos datos"; comprometer horas de due diligence ahí es caro y mal informado | R3 — despriorizar este ciclo |
+| The cheapest band (Q1, ≤$3.25 real) has the worst reception across all 10 genres | Low price doesn't buy reception; on Steam it works more as a signal of a low-budget product than a lever for adoption | R2 — use the catalogue's price position as a screening filter |
+| The best reception clusters at Q3 ($6.46-$12.36) or Q4 (>$12.36), never Q1 or Q2 | There's a defensible "price zone"; studios already operating in it have a validated price-product fit | R1 and R2 |
+| Adventure, Indie and Casual combine the best band effect, volume and absolute reception | These are the genres where the "mid-to-high price + good reception" thesis has the most support and the most available targets to invest in | R1 — concentrate due diligence there |
+| Massively Multiplayer has the worst reception of the 10 genres (76.4% median), a non-monotonic pattern and n=176 | Not a "no", it's an "we don't know with this data"; committing due-diligence hours there is expensive and poorly informed | R3 — deprioritise this cycle |
 
 ---
 
-## R1 — Concentrar la due diligence del próximo ciclo en Adventure, Indie y Casual
+## R1 — Concentrate next cycle's due diligence on Adventure, Indie and Casual
 
-- **Acción:** el equipo de originación reduce la lista larga de estudios y publishers candidatos a
-  los tres géneros Adventure, Indie y Casual para el ciclo de due diligence del próximo semestre.
-  Responsable: analista senior de originación. Plazo: definir la lista larga en 4 semanas.
-- **Evidencia:** de los 10 géneros de juego reales analizados, estos tres son los únicos que
-  combinan (a) recepción absoluta alta —mediana de reseñas positivas de 88,2% (Casual), 86,7%
-  (Indie) y 86,2% (Adventure), las tres más altas del conjunto— con (b) un efecto de franja de
-  precio claro —+3,31 p.p. (Casual), +3,94 p.p. (Indie) y +5,05 p.p. (Adventure) entre la franja
-  más barata y la mejor de su género— y (c) volumen suficiente de objetivos: 2.230, 5.561 y 4.030
-  juegos respectivamente, contra 176 del género más pequeño.
-  Fuente: `salidas/tablas/resumen_por_genero.csv` y `genero_x_franja_precio.csv`.
-  *Nota de precisión:* en Adventure la mejor franja es Q4 (87,48%) por 0,01 p.p. sobre Q3 (87,47%).
-  Es un empate técnico, no una preferencia por Q4; se reporta así para no sobreinterpretar el dato.
-- **Impacto esperado:** concentra el esfuerzo en el 49,6% de la base analizada (11.821 de 23.822
-  filas juego-género) que reúne los tres géneros con mejor recepción, en vez de repartirlo entre
-  10. **Supuesto explícito:** el impacto es de *asignación de esfuerzo*, no de retorno financiero —
-  el dataset no contiene ventas ni ingresos reales, así que no se estima ni se promete un efecto
-  sobre TIR o múltiplo.
-- **Métrica de éxito:** % de las operaciones que entran a due diligence profunda que pertenecen a
-  los tres géneros priorizados (objetivo: ≥70%), y mediana de % de reseñas positivas del catálogo
-  de los estudios que pasan el primer filtro (objetivo: ≥86%). Evaluación a 6 meses.
-- **Riesgo / supuesto crítico:** el patrón es correlacional y se apoya en la recepción del público,
-  no en desempeño comercial. Tendría que ser cierto que la recepción es un proxy razonable del
-  valor del estudio. Si no lo es —por ejemplo, si un género con peor recepción tiene mucha mejor
-  monetización—, la priorización estaría optimizando la variable equivocada. **Mitigación:** el
-  comité debe cruzar esta priorización con datos de ingresos antes de comprometer capital (ver
-  Próximos pasos).
-- **Esfuerzo:** bajo. Es una regla de filtrado sobre un proceso que el equipo ya ejecuta.
+- **Action:** the origination team narrows the long list of candidate studios and publishers to
+  the three genres Adventure, Indie and Casual for next semester's due diligence cycle. Owner:
+  senior origination analyst. Deadline: define the long list within 4 weeks.
+- **Evidence:** of the 10 real game genres analysed, these three are the only ones that combine
+  (a) high absolute reception — median positive-review share of 88.2% (Casual), 86.7% (Indie) and
+  86.2% (Adventure), the three highest in the set — with (b) a clear price-band effect — +3.31
+  p.p. (Casual), +3.94 p.p. (Indie) and +5.05 p.p. (Adventure) between the cheapest band and each
+  genre's best — and (c) sufficient target volume: 2,230, 5,561 and 4,030 games respectively,
+  against 176 for the smallest genre.
+  Source: `salidas/tablas/resumen_por_genero.csv` and `genero_x_franja_precio.csv`.
+  *Precision note:* in Adventure the best band is Q4 (87.48%) by 0.01 p.p. over Q3 (87.47%). This
+  is a technical tie, not a preference for Q4; reported as such to avoid overinterpreting the
+  data.
+- **Expected impact:** concentrates effort on the 49.6% of the analysed base (11,821 of 23,822
+  game-genre rows) that makes up the three genres with the best reception, instead of spreading
+  it across 10. **Explicit assumption:** the impact is *effort allocation*, not financial
+  return — the dataset contains no real sales or revenue, so no effect on IRR or multiple is
+  estimated or promised.
+- **Success metric:** % of deals entering deep due diligence that belong to the three prioritised
+  genres (target: ≥70%), and the median % positive reviews of the catalogue of studios that pass
+  the first filter (target: ≥86%). Evaluated at 6 months.
+- **Risk / critical assumption:** the pattern is correlational and rests on public reception, not
+  commercial performance. It would need to be true that reception is a reasonable proxy for a
+  studio's value. If it isn't — for example, if a genre with worse reception monetises much
+  better — the prioritisation would be optimising the wrong variable. **Mitigation:** the
+  committee should cross-reference this prioritisation with revenue data before committing
+  capital (see Next steps).
+- **Effort:** low. It's a filtering rule on a process the team already runs.
 
-## R2 — Incorporar la posición de precio del catálogo al cribado de due diligence
+## R2 — Add the catalogue's price position to due diligence screening
 
-- **Acción:** añadir al formulario de cribado un campo obligatorio: qué porcentaje del catálogo del
-  estudio candidato se sitúa en cada cuartil de precio ajustado (Q1 ≤3,25 · Q2 3,25–6,46 ·
-  Q3 6,46–12,36 · Q4 >12,36 USD reales de 2026). Un estudio con más de la mitad del catálogo en Q1
-  se marca para revisión explícita antes de avanzar. Responsable: analista de originación.
-  Plazo: incorporarlo al formulario antes de abrir la próxima lista larga.
-- **Evidencia:** Q1 es la franja de peor recepción mediana en los 10 géneros sin excepción, con
-  medianas que van de 76,0% (Massively Multiplayer) a 86,3% (Casual), siempre la más baja o
-  empatada-más-baja de su género. El patrón se sostiene al separar juegos recientes de viejos
-  (verificación 4, `notebooks/verificar.py`), y la antigüedad no lo explica (correlación
-  antigüedad × recepción = −0,087).
-- **Impacto esperado:** el efecto de franja es de 2,51 a 5,05 p.p. de reseñas positivas. Es una
-  diferencia real pero moderada. **Supuesto explícito:** por eso este campo se usa como señal de
-  alerta que obliga a una revisión, no como criterio de descarte automático — el tamaño del efecto
-  no justifica descartar un estudio solo por su franja de precio.
-- **Métrica de éxito:** % de fichas de cribado con el campo completo (objetivo: 100% a 3 meses) y
-  número de casos marcados que, tras revisión, resultaron efectivamente en un problema de
-  posicionamiento de producto. Evaluación a 6 meses.
-- **Riesgo / supuesto crítico:** los cuartiles se calcularon sobre el catálogo histórico completo
-  de Steam y en dólares ajustados con CPI-U de EE. UU. Tendría que ser cierto que esas bandas
-  siguen siendo representativas del mercado actual y de la región del estudio evaluado. Si el
-  fondo mira mercados con paridad de precio distinta (LATAM, Asia), las bandas necesitan
-  recalcularse. **Además:** existe una lectura alternativa no descartada —que los estudios que
-  cobran más también invierten más en calidad—, en cuyo caso el precio es síntoma y no causa. Eso
-  no invalida su uso como *señal de cribado*, pero sí impide usarlo como consejo de "sube el
-  precio".
-- **Esfuerzo:** bajo. Un campo nuevo en un formulario existente; el cálculo se hace con datos
-  públicos de Steam.
+- **Action:** add a required field to the screening form: what percentage of a candidate studio's
+  catalogue sits in each adjusted-price quartile (Q1 ≤$3.25 · Q2 $3.25-$6.46 · Q3 $6.46-$12.36 ·
+  Q4 >$12.36 real 2026 dollars). A studio with more than half its catalogue in Q1 is flagged for
+  explicit review before proceeding. Owner: origination analyst. Deadline: incorporate it into the
+  form before opening the next long list.
+- **Evidence:** Q1 is the worst-median-reception band across all 10 genres without exception, with
+  medians ranging from 76.0% (Massively Multiplayer) to 86.3% (Casual), always the lowest or
+  tied-lowest in its genre. The pattern holds when splitting recent from older games (check 4,
+  `notebooks/verificar.py`), and age doesn't explain it (age × reception correlation = -0.087).
+- **Expected impact:** the band effect is 2.51 to 5.05 p.p. of positive reviews. It's a real but
+  moderate difference. **Explicit assumption:** that's why this field is used as a warning signal
+  that triggers review, not an automatic disqualifying criterion — the effect size doesn't justify
+  ruling out a studio based on price band alone.
+- **Success metric:** % of screening records with the field completed (target: 100% at 3 months)
+  and the number of flagged cases that, after review, turned out to be a real product-positioning
+  problem. Evaluated at 6 months.
+- **Risk / critical assumption:** the quartiles were calculated on Steam's full historical
+  catalogue and in US CPI-U-adjusted dollars. It would need to be true that those bands remain
+  representative of the current market and of the region of the studio being evaluated. If the
+  fund looks at markets with different price parity (LATAM, Asia), the bands need recalculating.
+  **Also:** there's an alternative reading not ruled out — that studios who charge more also
+  invest more in quality — in which case price is a symptom, not a cause. That doesn't invalidate
+  its use as a *screening signal*, but it does rule out using it as "raise the price" advice.
+- **Effort:** low. A new field in an existing form; the calculation uses public Steam data.
 
-## R3 — Despriorizar Massively Multiplayer y tratar Sports y Racing como sin evidencia suficiente
+## R3 — Deprioritise Massively Multiplayer and treat Sports and Racing as insufficient evidence
 
-- **Acción:** excluir Massively Multiplayer de la lista larga de este ciclo y etiquetar Sports y
-  Racing como "requieren evidencia adicional" —no se descartan, pero no consumen horas de due
-  diligence hasta tener una base de datos más amplia. Responsable: comité de inversión, en la
-  reunión de definición de alcance del ciclo.
-- **Evidencia:** Massively Multiplayer tiene la mediana de reseñas positivas más baja de los 10
-  géneros en las 4 franjas de precio (74,8%–79,0%; mediana global 76,4%), es el único género con
-  patrón no monótono —su mejor franja es Q2, no Q3/Q4— y tiene el n más pequeño de la base (176
-  juegos). Sports (329 juegos) y Racing (338) también quedan por debajo del umbral de n<350 que se
-  fijó en la verificación 7 de fase 4 para reportar con advertencia de muestra chica.
-- **Impacto esperado:** libera las horas de originación de tres géneros que suman el 3,5% de la
-  base analizada (843 de 23.822 filas juego-género) y las redirige a R1. **Supuesto explícito:** el
-  impacto es de asignación de tiempo del equipo, no financiero.
-- **Métrica de éxito:** cero operaciones de Massively Multiplayer entrando a due diligence profunda
-  sin una fuente de datos adicional que la sustente, revisado al cierre del ciclo (6 meses).
-- **Riesgo / supuesto crítico:** este es el riesgo más incómodo de las tres recomendaciones. Un n
-  de 176 juegos es evidencia débil, y despriorizar por evidencia débil puede ser exactamente cómo
-  se pierde una oportunidad: los MMO son un modelo de negocio de ingresos recurrentes que la
-  métrica de reseñas de Steam captura mal —un jugador insatisfecho con la monetización deja reseña
-  negativa aunque el juego sea rentable. Si el fondo tiene tesis de ingresos recurrentes, esta
-  recomendación debería revisarse con datos de retención y gasto por usuario, no con reseñas.
-- **Esfuerzo:** bajo. Es una decisión de alcance, no un proceso nuevo.
+- **Action:** exclude Massively Multiplayer from this cycle's long list and label Sports and
+  Racing as "needs additional evidence" — not dismissed, but not consuming due-diligence hours
+  until a broader data base exists. Owner: investment committee, at the cycle scoping meeting.
+- **Evidence:** Massively Multiplayer has the lowest median positive-review share of the 10
+  genres across all 4 price bands (74.8%-79.0%; overall median 76.4%), is the only genre with a
+  non-monotonic pattern — its best band is Q2, not Q3/Q4 — and has the smallest n in the base
+  (176 games). Sports (329 games) and Racing (338) also fall below the n<350 threshold set in
+  Phase 4's check 7 for reporting with a small-sample warning.
+- **Expected impact:** frees up origination hours from three genres that make up 3.5% of the
+  analysed base (843 of 23,822 game-genre rows) and redirects them to R1. **Explicit assumption:**
+  the impact is the team's time allocation, not financial.
+- **Success metric:** zero Massively Multiplayer deals entering deep due diligence without an
+  additional data source to support them, reviewed at cycle close (6 months).
+- **Risk / critical assumption:** this is the most uncomfortable risk of the three
+  recommendations. An n of 176 games is weak evidence, and deprioritising on weak evidence can be
+  exactly how an opportunity is missed: MMOs are a recurring-revenue business model that Steam's
+  review metric captures poorly — a player dissatisfied with monetisation leaves a negative
+  review even if the game is profitable. If the fund has a recurring-revenue thesis, this
+  recommendation should be revisited with retention and spend-per-user data, not reviews.
+- **Effort:** low. It's a scoping decision, not a new process.
 
 ---
 
-## Priorización (impacto contra esfuerzo)
+## Prioritisation (impact against effort)
 
-| # | Recomendación | Impacto | Esfuerzo | Prioridad |
+| # | Recommendation | Impact | Effort | Priority |
 |---|---|---|---|---|
-| R1 | Concentrar due diligence en Adventure, Indie y Casual | Alto | Bajo | **1 — hacer ya** |
-| R2 | Añadir posición de precio al cribado | Medio | Bajo | **2 — hacer ya** |
-| R3 | Despriorizar MMO; Sports y Racing sin evidencia suficiente | Medio | Bajo | **3 — decidir en la reunión de alcance** |
+| R1 | Concentrate due diligence on Adventure, Indie and Casual | High | Low | **1 — do now** |
+| R2 | Add price position to screening | Medium | Low | **2 — do now** |
+| R3 | Deprioritise MMO; Sports and Racing as insufficient evidence | Medium | Low | **3 — decide at the scoping meeting** |
 
-Las tres son de esfuerzo bajo porque las tres son reglas sobre un proceso que el fondo ya tiene.
-Ninguna requiere contratar, comprar datos ni construir herramientas. Ese es deliberadamente el
-techo de lo que este análisis puede sostener: con reseñas agregadas y sin datos de ingresos, la
-recomendación honesta es *dónde mirar primero*, no *dónde poner el dinero*.
+All three are low-effort because all three are rules on a process the fund already has. None
+requires hiring, buying data, or building tools. That's deliberately the ceiling of what this
+analysis can support: with aggregated reviews and no revenue data, the honest recommendation is
+*where to look first*, not *where to put the money*.
 
 ---
 
-## Limitaciones
+## Limitations
 
-1. **No hay causalidad.** El patrón "precio medio-alto → mejor recepción" es correlación
-   descriptiva. La lectura alternativa más fuerte —selección: los estudios que cobran más también
-   invierten más en producción— no puede descartarse con estos datos. Lo que sí se descartó, con
-   evidencia, es que el patrón sea un artefacto de antigüedad (correlación −0,087 y control por
-   banda de antigüedad).
-2. **No hay datos de ingresos ni de ventas.** `estimated_owners` viene en rangos estimados por
-   SteamSpy, no confirmados por Valve, y no se usó como métrica del análisis. Por tanto el caso no
-   dice nada sobre rentabilidad, solo sobre recepción del público.
-3. **Sesgo de supervivencia.** El dataset solo contiene juegos publicados en Steam: no hay juegos
-   cancelados, rechazados ni retirados, ni nada fuera de PC/Steam (consolas, móvil).
-4. **La cola larga está fuera.** El filtro de ≥500 reseñas —decidido en fase 1 por confiabilidad
-   estadística— excluye deliberadamente al 34,1% del catálogo que tiene 0 reseñas. La muestra está
-   sesgada hacia juegos visibles y exitosos. Si el fondo busca precisamente estudios pequeños y
-   emergentes, este análisis no los cubre.
-5. **Reseñas agregadas, no fechadas.** No existe la evolución temporal de la recepción de un juego;
-   la antigüedad del juego se usó como proxy, y ese proxy no captura si un juego mejoró o empeoró
-   su recepción tras el lanzamiento.
-6. **Ajuste por inflación con año base parcial.** El CPI-U de 2026 es el promedio de solo cuatro
-   meses (ene–abr), el único dato disponible a la fecha de descarga.
-7. **Fuente de tercera parte.** El dataset es de un agregador (fronkongames), no de Valve
-   directamente. Falla el componente "Original" de ROCCC; se declara y no se oculta.
+1. **No causality.** The "mid-to-high price → better reception" pattern is a descriptive
+   correlation. The strongest alternative reading — selection: studios who charge more also
+   invest more in production — cannot be ruled out with this data. What was ruled out with
+   evidence is that the pattern is an age artefact (correlation -0.087 and age-band control).
+2. **No revenue or sales data.** `estimated_owners` comes in SteamSpy-estimated ranges, not
+   Valve-confirmed, and was not used as an analysis metric. So the case says nothing about
+   profitability, only about public reception.
+3. **Survivorship bias.** The dataset only contains games published on Steam: no cancelled,
+   rejected, or delisted games, and nothing outside PC/Steam (consoles, mobile).
+4. **The long tail is excluded.** The ≥500-review filter — decided in Phase 1 for statistical
+   reliability — deliberately excludes the 34.1% of the catalogue with 0 reviews. The sample is
+   biased toward visible, successful games. If the fund is specifically looking for small,
+   emerging studios, this analysis doesn't cover them.
+5. **Aggregated, undated reviews.** There's no time evolution of a game's reception; game age was
+   used as a proxy, and that proxy doesn't capture whether a game's reception improved or
+   worsened after launch.
+6. **Inflation adjustment with a partial base year.** The 2026 CPI-U is the average of only four
+   months (Jan-Apr), the only data available as of the download date.
+7. **Third-party source.** The dataset comes from an aggregator (fronkongames), not directly from
+   Valve. This fails ROCCC's "Original" component; it is declared, not hidden.
 
-## Datos adicionales que fortalecerían las conclusiones
+## Additional data that would strengthen the conclusions
 
-| Dato | Qué desbloquearía |
+| Data | What it would unlock |
 |---|---|
-| Ingresos o unidades vendidas reales (Valve, o datos de la propia empresa objetivo en la due diligence) | Pasar de "mejor recepción" a "mejor retorno" — es lo que de verdad decide una inversión |
-| Reseñas individuales con fecha | Ver si la recepción se sostiene, mejora o se degrada tras el lanzamiento, y separar el efecto del lanzamiento del efecto del precio |
-| Presupuesto de producción o tamaño del estudio | Probar directamente la lectura alternativa de selección: si al controlar por presupuesto el efecto del precio desaparece, R2 pierde sustento |
-| Histórico de cambios de precio y descuentos por juego | Distinguir precio de lista de precio efectivamente pagado; el análisis actual usa precio de lista |
-| Datos de retención y gasto por usuario | Evaluar Massively Multiplayer con la métrica adecuada a su modelo de negocio, en vez de con reseñas (ver riesgo de R3) |
-| Datos de consolas y móvil | Saber si el patrón de precio es de Steam o de la industria; hoy no se puede distinguir |
+| Real revenue or units sold (Valve, or the target company's own data during due diligence) | Moving from "best reception" to "best return" — which is what actually decides an investment |
+| Dated individual reviews | Seeing whether reception holds, improves, or degrades after launch, and separating the launch effect from the price effect |
+| Production budget or studio size | Directly testing the alternative selection reading: if the price effect disappears when controlling for budget, R2 loses support |
+| Price and discount history per game | Distinguishing list price from price actually paid; the current analysis uses list price |
+| Retention and spend-per-user data | Evaluating Massively Multiplayer with a metric suited to its business model, instead of reviews (see R3's risk) |
+| Console and mobile data | Knowing whether the price pattern is a Steam thing or an industry thing; today it can't be distinguished |
 
-## Próximos pasos
+## Next steps
 
-1. **Analizar la cola larga (<500 reseñas).** Repetir la tabla género × franja bajando el umbral a
-   50 y 100 reseñas para ver si el patrón se sostiene en el segmento indie/nicho. *Decisión que
-   desbloquea:* si el fondo debe o no abrir un carril de inversión en estudios pequeños.
-   (Entregable adicional ya previsto desde fase 1.)
-2. **Cruzar los tres géneros priorizados con una fuente de ingresos.** *Decisión que desbloquea:*
-   convertir la priorización de horas (R1) en una priorización de capital.
-3. **Análisis de sensibilidad de las franjas.** Recalcular con quintiles y con bandas fijas para
-   confirmar que la conclusión no depende de haber elegido cuartiles. *Decisión que desbloquea:*
-   cuánta confianza poner en el campo de cribado de R2.
+1. **Analyse the long tail (<500 reviews).** Repeat the genre × band table lowering the threshold
+   to 50 and 100 reviews to see whether the pattern holds in the indie/niche segment. *Decision
+   this unlocks:* whether the fund should open an investment lane for small studios. (Additional
+   deliverable already anticipated since Phase 1.)
+2. **Cross-reference the three prioritised genres with a revenue source.** *Decision this
+   unlocks:* turning the hour-prioritisation (R1) into a capital-prioritisation.
+3. **Sensitivity analysis on the bands.** Recalculate with quintiles and with fixed bands to
+   confirm the conclusion doesn't depend on having chosen quartiles. *Decision this unlocks:* how
+   much confidence to place in R2's screening field.

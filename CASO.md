@@ -1,462 +1,480 @@
-# Caso: Precio y recepción en Steam (caso de inversión en videojuegos)
+# Case: Price and reception on Steam (video game investment case)
 
-**Estado:** fase 6 — Actuar (en curso; entregables escritos, publicación y ensayo pendientes)
-**Última actualización:** 2026-07-28
+**Status:** Phase 7 — Portfolio (case published; presentation rehearsal pending)
+**Last updated:** 2026-08-10
 
-## 0. Elegir (ficha de decisión)
+## 0. Choose (decision sheet)
 
-**Fecha:** 2026-07-28
+**Date:** 2026-07-28
 
-### El caso
-- **Sector / cliente ficticio:** Fondo de inversión evaluando entrada en el sector de videojuegos,
-  usando el mercado de Steam como proxy del mercado de PC/digital.
-- **Problema de negocio en una frase:** ¿Qué combinaciones de género y franja de precio en Steam
-  logran mejor recepción (reseñas) sin sacrificar precio, y qué géneros son por tanto mejores
-  candidatos de inversión?
-- **Decisión concreta que habilita:** Recomendar en qué género(s) conviene que el fondo priorice
-  su tesis de inversión (p. ej. estudios o publishers de ese género).
-- **Audiencia de la presentación:** Portafolio / reclutadores (caso de demostración de habilidad).
+### The case
+- **Sector / fictional client:** Investment fund evaluating entry into the video game sector,
+  using the Steam market as a proxy for the PC/digital market.
+- **Business problem in one sentence:** Which genre and price-band combinations on Steam achieve
+  the best reception (reviews) without sacrificing price, and which genres are therefore the
+  better investment candidates?
+- **Concrete decision this enables:** Recommend which genre(s) the fund should prioritise for its
+  investment thesis (e.g. studios or publishers in that genre).
+- **Presentation audience:** Portfolio / recruiters (skill-demonstration case).
 
-### Los datos
-- **Fuente candidata:** Steam Games Dataset (fronkongames), Kaggle / Hugging Face.
-- **Licencia:** CC BY 4.0 — requiere atribución en el README público.
-- **Periodo y volumen:** 125.855 juegos publicados en Steam, catálogo histórico completo hasta la
-  fecha de recolección (dataset con actualizaciones periódicas).
-- **Prueba de integridad inicial:** ⚠️ verificada solo a nivel de metadatos (columnas, licencia,
-  volumen, procedencia vía API oficial + SteamSpy). Nulos, duplicados y unicidad de clave reales
-  quedan pendientes de la prueba completa en fase 2, con el archivo ya cargado. Dos advertencias
-  conocidas de antemano:
-  1. El CSV crudo tiene un bug de cabecera que desalinea las columnas posteriores a
-     `Discount`/`DLC count`.
-  2. `estimated_owners` viene en rangos, no en cifra exacta.
-- **¿Contiene los campos que la pregunta exige?** Sí — `price`, `genres`, `positive`/`negative`
-  (reseñas). Falta: reseñas individuales fechadas (solo agregado por juego), así que "sostener
-  precio en el tiempo" se analizará por antigüedad del juego, no por evolución real de reseñas.
+### The data
+- **Candidate source:** Steam Games Dataset (fronkongames), Kaggle / Hugging Face.
+- **Licence:** CC BY 4.0 — requires attribution in the public README.
+- **Period and volume:** 125,855 games published on Steam, full historical catalogue up to the
+  collection date (dataset with periodic updates).
+- **Initial integrity check:** ⚠️ verified only at the metadata level (columns, licence, volume,
+  provenance via official API + SteamSpy). Real null counts, duplicates and key uniqueness are
+  pending the full check in Phase 2, once the file is loaded. Two known caveats up front:
+  1. The raw CSV has a header bug that misaligns the columns after `Discount`/`DLC count`.
+  2. `estimated_owners` comes in ranges, not an exact figure.
+- **Does it contain the fields the question requires?** Yes — `price`, `genres`,
+  `positive`/`negative` (reviews). Missing: dated individual reviews (only a per-game aggregate),
+  so "sustaining price over time" will be analysed via game age, not the real evolution of
+  reviews.
 
-### Calibración
-- **Estimación de esfuerzo:** ~1 semana de trabajo enfocado.
-- **¿Da para 30 minutos de presentación?** Sí.
-- **¿Hay limpieza real que documentar?** Sí — bug de cabecera, precios en 0 para F2P a tratar
-  aparte, posibles nulos en tags/géneros, duplicados potenciales por reediciones.
+### Calibration
+- **Effort estimate:** ~1 week of focused work.
+- **Does it support a 30-minute presentation?** Yes.
+- **Is there real cleaning to document?** Yes — header bug, zero prices for F2P to handle
+  separately, possible nulls in tags/genres, potential duplicates from re-releases.
 
-### Encaje en el portafolio
-- **Qué demuestra que mis otros casos no:** Es el primer caso, así que fija la base: traducir una
-  pregunta de inversión a un análisis de pricing + sentimiento, con Python/pandas, sobre un dataset
-  con una imperfección estructural real (no solo nulos triviales).
-- **Herramienta principal:** Python (pandas).
-- **Nivel de saturación del dataset:** Medio.
+### Fit in the portfolio
+- **What it demonstrates that my other cases don't:** It's the first case, so it sets the
+  baseline: turning an investment question into a pricing + sentiment analysis, with
+  Python/pandas, on a dataset with a real structural flaw (not just trivial nulls).
+- **Main tool:** Python (pandas).
+- **Dataset saturation level:** Medium.
 
-### Decisión
-- [x] Adelante
-- [ ] Descartado — motivo:
+### Decision
+- [x] Proceed
+- [ ] Discarded — reason:
 
-**Puerta de salida fase 0:** ✅ completa (aprobada por el usuario el 2026-07-28).
+**Phase 0 exit gate:** ✅ complete (approved by the user on 2026-07-28).
 
 ---
 
-## 1. Preguntar
+## 1. Ask
 
-**Estado:** ✅ cerrada (aprobada por el usuario el 2026-07-28)
+**Status:** ✅ closed (approved by the user on 2026-07-28)
 
-- **Problema de negocio:** Un fondo de inversión enfocado en videojuegos no tiene un criterio
-  basado en datos para decidir en qué género priorizar su tesis de inversión en el mercado de
-  PC/Steam.
-- **Pregunta analítica (SMART):** ¿Qué combinaciones de género y franja de precio (cuartiles de
-  precio ajustado por inflación, calculados sobre juegos de pago con ≥500 reseñas) en el catálogo
-  histórico de Steam muestran el patrón más consistente de alto % de reseñas positivas,
-  controlando por antigüedad del juego?
-- **Decisión que habilita:** Recomendar 2-3 géneros donde el comité debería priorizar due
-  diligence de inversión, con la evidencia de qué franja de precio sostiene mejor recepción en
-  cada uno.
-- **Tipo de problema:** Encontrar patrones.
+- **Business problem:** A video-game-focused investment fund has no data-driven basis for
+  deciding which genre to prioritise for its investment thesis in the PC/Steam market.
+- **Analytical question (SMART):** Which genre and price-band combinations (inflation-adjusted
+  price quartiles, calculated on paid games with ≥500 reviews) in Steam's historical catalogue
+  show the most consistent pattern of high positive-review %, controlling for game age?
+- **Decision this unlocks:** Recommend 2-3 genres where the committee should prioritise
+  investment due diligence, with evidence of which price band sustains the best reception in
+  each.
+- **Problem type:** Find patterns.
 
-- **Partes interesadas:**
+- **Stakeholders:**
 
-| Quién | Qué decide / necesita | Formato |
+| Who | What they decide / need | Format |
 |---|---|---|
-| Comité de inversión (primaria) | Decide dónde priorizar due diligence; necesita recomendación clara con evidencia y riesgos | Presentación ~30 min + resumen ejecutivo |
-| Analista senior (secundaria) | Valida método, limpieza y supuestos | Bitácora + documentación técnica (notebook) |
+| Investment committee (primary) | Decides where to prioritise due diligence; needs a clear recommendation with evidence and risks | ~30 min presentation + executive summary |
+| Senior analyst (secondary) | Validates method, cleaning and assumptions | Cleaning log + technical documentation (notebook) |
 
-- **Métricas:**
+- **Metrics:**
 
-| Métrica | Fórmula | Unidad | Granularidad | Ventana |
+| Metric | Formula | Unit | Granularity | Window |
 |---|---|---|---|---|
-| % reseñas positivas | `positive / (positive + negative) × 100` | Porcentaje | Por juego | Acumulado histórico a la fecha de recolección del dataset |
-| Categoría Steam (solo para presentar) | Recalculada con umbrales públicos de Steam sobre volumen y % positivo | Categórica (Overwhelmingly Positive…Negative) | Por juego | Igual que arriba |
-| Filtro de inclusión | `positive + negative ≥ 500` | Conteo | Por juego | — |
-| Precio ajustado por inflación | `price × (CPI_base / CPI_release_year)`, base = año más reciente del dataset | USD reales | Por juego | Requiere índice CPI (fuente externa, EE.UU.) — pendiente de validar en fase 2 |
-| Antigüedad del juego | `año_base − release_year` | Años | Por juego | Variable de control, no filtro |
-| Franja de precio | Cuartiles de precio **ajustado** sobre juegos de pago (price > 0) que pasen el filtro de reseñas | Rango USD reales | Por juego | Estática (catálogo completo) |
+| % positive reviews | `positive / (positive + negative) × 100` | Percentage | Per game | Historical cumulative as of the dataset collection date |
+| Steam category (presentation only) | Recalculated with Steam's public thresholds on volume and % positive | Categorical (Overwhelmingly Positive…Negative) | Per game | Same as above |
+| Inclusion filter | `positive + negative ≥ 500` | Count | Per game | — |
+| Inflation-adjusted price | `price × (CPI_base / CPI_release_year)`, base = dataset's most recent year | Real USD | Per game | Requires a CPI index (external US source) — pending validation in Phase 2 |
+| Game age | `base_year − release_year` | Years | Per game | Control variable, not a filter |
+| Price band | Quartiles of **adjusted** price on paid games (price > 0) passing the review filter | Real-USD range | Per game | Static (full catalogue) |
 
-⚠️ Pendiente (no bloquea esta fase, se resuelve en Procesar): cómo desagregar juegos con
-múltiples géneros.
+⚠️ Pending (doesn't block this phase, resolved in Process): how to disaggregate games with
+multiple genres.
 
-⚠️ Condicional: la corrección por inflación depende de que la fuente CPI externa pase la prueba
-de integridad de la fase 2. Si no la pasa, este punto se degrada a "limitación declarada" y se
-documenta el porqué en vez de aplicarse silenciosamente.
+⚠️ Conditional: the inflation adjustment depends on the external CPI source passing the Phase 2
+integrity check. If it doesn't, this point downgrades to a "declared limitation" and the reason
+is documented instead of applying it silently.
 
-- **Fuera de alcance:**
-  - Solo PC/Steam — no consolas ni móvil.
-  - Juegos F2P quedan fuera del análisis de franja de precio (se documentan como contexto aparte).
-  - No establece causalidad, solo patrón/correlación descriptiva.
-  - No asigna presupuesto de inversión, solo prioriza géneros para due diligence.
-  - Excluye la cola larga con <500 reseñas (indie/nicho) — se deja como "entregable adicional
-    para explorar" en fase 6.
+- **Out of scope:**
+  - PC/Steam only — no consoles or mobile.
+  - F2P games are excluded from the price-band analysis (documented as separate context).
+  - Does not establish causality, only a descriptive pattern/correlation.
+  - Does not allocate investment budget, only prioritises genres for due diligence.
+  - Excludes the long tail with <500 reviews (indie/niche) — left as an "additional deliverable
+    to explore" in Phase 6.
 
-**Puerta de salida fase 1:** ✅ completa
-- [x] Problema de negocio en 1-2 frases, sin jerga.
-- [x] Pregunta analítica SMART y justa.
-- [x] Decisión concreta escrita.
-- [x] Tipo de problema identificado.
-- [x] Partes interesadas mapeadas con lo que cada una necesita.
-- [x] Métricas con definición operativa.
-- [x] Alcance con qué queda explícitamente fuera.
+**Phase 1 exit gate:** ✅ complete
+- [x] Business problem in 1-2 sentences, jargon-free.
+- [x] SMART and fair analytical question.
+- [x] Concrete decision written down.
+- [x] Problem type identified.
+- [x] Stakeholders mapped with what each one needs.
+- [x] Metrics with operational definitions.
+- [x] Scope with what is explicitly excluded.
 
-## 2. Preparar
+## 2. Prepare
 
-**Estado:** ✅ cerrada (aprobada por el usuario el 2026-07-28)
+**Status:** ✅ closed (approved by the user on 2026-07-28)
 
-- **Fuentes:** ver fichas completas en `documentacion/fichas-de-fuente.md`.
-  1. **Steam Games Dataset** (Kaggle, fronkongames) — descargado 2026-07-28. 125.855 filas × 40
-     columnas reales (la cabecera cruda solo declara 39, ver bug abajo). CC BY 4.0.
-  2. **CPI-U** (Bureau of Labor Statistics, EE. UU., serie `CUUR0000SA0`) — aprobada el 2026-07-28
-     como segunda fuente para el ajuste por inflación de la fase 1. Dominio público. Se descargará
-     en fase 3 al aplicar el ajuste.
+- **Sources:** full records in `documentacion/fichas-de-fuente.md`.
+  1. **Steam Games Dataset** (Kaggle, fronkongames) — downloaded 2026-07-28. 125,855 rows × 40
+     real columns (the raw header only declares 39, see bug below). CC BY 4.0.
+  2. **CPI-U** (US Bureau of Labor Statistics, series `CUUR0000SA0`) — approved on 2026-07-28 as
+     the second source for the Phase 1 inflation adjustment. Public domain. Will be downloaded in
+     Phase 3 when the adjustment is applied.
 
-- **Evaluación ROCCC:** detalle completo en `documentacion/fichas-de-fuente.md`.
-  - Steam Games Dataset: falla parcialmente en **O**riginal (es agregador de tercera parte, no
-    Valve directo) y en el componente de confiabilidad de `estimated_owners` (estimación de
-    SteamSpy, no ventas reales). El resto de las letras es alto. No se descarta; se declara como
-    limitación.
-  - CPI-U: no falla ninguna letra — primera parte, actual, comprensivo para el uso previsto,
-    documentado.
+- **ROCCC assessment:** full detail in `documentacion/fichas-de-fuente.md`.
+  - Steam Games Dataset: partially fails **O**riginal (it's a third-party aggregator, not
+    straight from Valve) and the reliability component of `estimated_owners` (a SteamSpy
+    estimate, not real sales). Not disqualified; declared as a limitation.
+  - CPI-U: fails no letter — first-party, current, comprehensive for the intended use,
+    documented.
 
-- **Sesgos identificados:**
-  - **Sesgo de supervivencia:** el dataset solo contiene juegos que llegaron a publicarse en
-    Steam; no capta juegos rechazados, retirados, ni la industria fuera de PC/Steam.
-  - **Sesgo de muestreo (cola larga):** 42.899 juegos (34,1%) tienen 0 reseñas (positivas +
-    negativas). El filtro de ≥500 reseñas ya decidido en fase 1 excluye deliberadamente esta cola;
-    la muestra final queda sesgada hacia juegos exitosos/visibles. Es una decisión de alcance
-    documentada, no un sesgo oculto.
-  - **Sesgo de medición en `estimated_owners`:** viene en rangos categóricos estimados por
-    SteamSpy, no en cifra confirmada por Valve. No se usará como métrica principal del análisis,
-    solo como contexto.
-  - **Multi-género sin resolver:** 6,69% de los juegos no tiene género asignado; el resto tiene
-    entre 1 y 19 géneros (mediana ~3). Cómo desagregar géneros múltiples queda pendiente para
-    fase 3 (ya señalado en fase 1).
+- **Identified biases:**
+  - **Survivorship bias:** the dataset only contains games that made it to publication on Steam;
+    it doesn't capture rejected or delisted games, nor the industry outside PC/Steam.
+  - **Sampling bias (long tail):** 42,899 games (34.1%) have 0 reviews (positive + negative). The
+    ≥500-review filter already decided in Phase 1 deliberately excludes this tail; the final
+    sample skews toward successful/visible games. This is a documented scoping decision, not a
+    hidden bias.
+  - **Measurement bias in `estimated_owners`:** it comes in categorical ranges estimated by
+    SteamSpy, not a Valve-confirmed figure. It will not be used as the analysis's main metric,
+    only as context.
+  - **Unresolved multi-genre:** 6.69% of games have no genre assigned; the rest have between 1
+    and 19 genres (median ~3). How to disaggregate multiple genres is left for Phase 3 (already
+    flagged in Phase 1).
 
-- **Licencia / privacidad / seguridad / accesibilidad:**
-  - Steam Games Dataset: CC BY 4.0, requiere atribución en el README público. Sin PII. Archivo
-    estático local, sin credenciales involucradas.
-  - CPI-U: dominio público, sin restricciones, sin PII.
-  - **Decisión de accesibilidad:** el crudo (~400 MB) no se sube al repo público del portafolio;
-    el README enlazará directamente a la fuente en Kaggle. Confirmado con el usuario.
+- **Licence / privacy / security / accessibility:**
+  - Steam Games Dataset: CC BY 4.0, requires attribution in the public README. No PII. Static
+    local file, no credentials involved.
+  - CPI-U: public domain, no restrictions, no PII.
+  - **Accessibility decision:** the raw file (~400 MB) is not uploaded to the portfolio's public
+    repository; the README will link directly to the Kaggle source. Confirmed with the user.
 
-- **Prueba de integridad inicial:**
-  - Filas × columnas: 125.855 × 40 (la cabecera cruda declara 39 columnas; cada fila trae 40
-    campos). **Bug de cabecera confirmado y diagnosticado:** el nombre `DiscountDLC count`
-    (posición 7) fusiona dos columnas reales, `Discount` y `DLC count`. Se corrigió insertando el
-    nombre faltante antes de cargar el archivo — el procedimiento se documenta en
-    `documentacion/fichas-de-fuente.md` y deberá repetirse igual al inicio de la fase 3.
-  - Rango de fechas real: 1997-06-30 a 2026-12-01. Solo 2 filas con fecha de lanzamiento futura
-    (aún no publicados, 0 reseñas) — se excluirán en fase 3.
-  - Nulos por columna: altos y esperables en columnas no usadas por la pregunta (`Movies` 100%,
-    `Score rank` 99,97%, `Metacritic url` 96,6%, `Reviews` 90,3%). Las columnas que sí usa la
-    pregunta tienen nulos bajos: `Genres` 6,69%, `Price` 0%, `Positive`/`Negative` 0%.
-  - Unicidad de clave: `AppID` 125.855 valores únicos sobre 125.855 filas → 0 duplicados exactos.
-    0 filas completamente duplicadas.
-  - Rangos numéricos: sin negativos en `Price`, `Positive`, `Negative`. `DLC count` llega a 3.703
-    en un caso (Fantasy Grounds VTT, verificado como real — tiene miles de DLC de mesa). `Price`
-    máximo 999,98 USD, sin valores imposibles. `Metacritic score` usa `0` como centinela de "sin
-    dato" (solo 3,38% de los juegos tiene puntaje real) — documentado en el diccionario para que
-    fase 3/4 no lo confunda con una puntuación real.
-  - Detalle columna por columna en `documentacion/diccionario-de-datos.md`.
+- **Initial integrity check:**
+  - Rows × columns: 125,855 × 40 (the raw header declares 39 columns; every row carries 40
+    fields). **Header bug confirmed and diagnosed:** the name `DiscountDLC count` (position 7)
+    merges two real columns, `Discount` and `DLC count`. Fixed by inserting the missing name
+    before loading the file — the procedure is documented in `documentacion/fichas-de-fuente.md`
+    and will need to be repeated identically at the start of Phase 3.
+  - Real date range: 1997-06-30 to 2026-12-01. Only 2 rows with a future release date (not yet
+    published, 0 reviews) — will be excluded in Phase 3.
+  - Nulls per column: high and expected in columns not used by the question (`Movies` 100%,
+    `Score rank` 99.97%, `Metacritic url` 96.6%, `Reviews` 90.3%). The columns the question does
+    use have low nulls: `Genres` 6.69%, `Price` 0%, `Positive`/`Negative` 0%.
+  - Key uniqueness: `AppID` has 125,855 unique values across 125,855 rows → 0 exact duplicates. 0
+    fully duplicated rows.
+  - Numeric ranges: no negatives in `Price`, `Positive`, `Negative`. `DLC count` reaches 3,703 in
+    one case (Fantasy Grounds VTT, verified as real — it has thousands of tabletop DLCs). `Price`
+    maxes out at $999.98, no impossible values. `Metacritic score` uses `0` as a "no data"
+    sentinel (only 3.38% of games have a real score) — documented in the dictionary so Phase 3/4
+    doesn't mistake it for a real score.
+  - Column-by-column detail in `documentacion/diccionario-de-datos.md`.
 
-- **Confirmación:** estos datos sí responden la pregunta de fase 1. `price`, `genres`, `positive`
-  y `negative` están presentes y con nulos manejables. La única brecha (reseñas fechadas
-  individuales) ya estaba prevista y resuelta con el proxy de antigüedad del juego.
+- **Confirmation:** this data does answer the Phase 1 question. `price`, `genres`, `positive`
+  and `negative` are present with manageable nulls. The one gap (dated individual reviews) was
+  already anticipated and resolved with the game-age proxy.
 
-- **Puerta de salida:** ✅ completa
-  - [x] Cada fuente tiene su ficha completa.
-  - [x] ROCCC evaluado por fuente, con las fallas declaradas.
-  - [x] Sesgos potenciales identificados por escrito.
-  - [x] Licencia, privacidad, seguridad y accesibilidad resueltas.
-  - [x] Diccionario de datos escrito.
-  - [x] Copia inmutable del crudo guardada, con convención de nombres
+- **Exit gate:** ✅ complete
+  - [x] Every source has its full record.
+  - [x] ROCCC assessed per source, with failures declared.
+  - [x] Potential biases identified in writing.
+  - [x] Licence, privacy, security and accessibility resolved.
+  - [x] Data dictionary written.
+  - [x] Immutable copy of the raw file saved, with naming convention
         (`datos/crudos/steam_fronkongames_catalogo-historico_2026-07-28.csv`).
-  - [x] Prueba de integridad inicial ejecutada, con sus resultados anotados.
-  - [x] Confirmado que estos datos sí pueden responder la pregunta de la fase 1.
+  - [x] Initial integrity check run, with results noted.
+  - [x] Confirmed that this data can answer the Phase 1 question.
 
-## 3. Procesar
+## 3. Process
 
-**Estado:** ✅ cerrada (aprobada por el usuario el 2026-07-28)
+**Status:** ✅ closed (approved by the user on 2026-07-28)
 
-- **Herramienta y justificación:** Python (pandas) — decidido en fase 0. Se confirma en esta fase:
-  el proceso exige reproducibilidad sobre un archivo de 400 MB con un bug estructural de cabecera,
-  algo inviable de auditar a mano en una hoja de cálculo.
-- **Bitácora:** detalle completo de las 8 transformaciones en `bitacora-limpieza.md`.
-  Script reproducible: `notebooks/procesar.py` (corre de punta a punta desde el crudo).
-- **Transformaciones clave:**
-  1. Corrección del bug de cabecera (`DiscountDLC count` → `Discount` + `DLC count`).
-  2. Exclusión de 2 juegos con fecha de lanzamiento futura.
-  3. 15 columnas descartadas por estar fuera de alcance (nulos altos o texto no estructurado).
-  4. 0 duplicados por `AppID` (reconfirmado).
-  5. Exclusión de 8.423 juegos sin género asignado (no clasificables).
-  6. Enriquecimiento con CPI-U de BLS: `anio_lanzamiento`, `antiguedad_anios`,
-     `precio_ajustado_usd` (año base 2026, con limitación declarada: el CPI de 2026 es un promedio
-     parcial de solo 4 meses).
-  7. Cálculo de `pct_resenas_positivas` (nulo, no 0%, para los 34.589 juegos sin ninguna reseña).
-  8. Dataset derivado `steam_juegos_por_genero.csv`, explotado por género (decisión confirmada con
-     el usuario: un juego con N géneros genera N filas).
-- **Reconciliación de conteos:** 125.855 inicial − 2 (fecha futura) − 0 (duplicados) − 8.423
-  (sin género) = **117.430 final**. Verificado con `assert` en el script. El dataset explotado por
-  género tiene 338.575 filas juego-género.
-- **Valores atípicos investigados:** `DLC count` máximo de 3.703 (Fantasy Grounds VTT, verificado
-  como real, no se elimina). `Metacritic score` usa `0` como centinela de "sin dato" (documentado,
-  no se confunde con puntuación real).
-- **Observación para fase 4:** la taxonomía `Genres` de Steam mezcla géneros reales (`Action`,
-  `RPG`) con descriptores de contenido/modelo de negocio (`Violent`, `Gore`, `Free To Play`,
-  `Early Access`). 33 valores únicos en total — fase 4 deberá decidir cómo tratarlos.
-- **Puerta de salida:** ✅ completa
-  - [x] Herramienta elegida y justificada.
-  - [x] Cada tipo de dato sucio revisado explícitamente.
-  - [x] Bitácora completa con qué, por qué, cómo y cuántas filas por transformación.
-  - [x] Reconciliación de conteos que cuadra (verificada con `assert`).
-  - [x] Valores atípicos investigados y la decisión justificada.
-  - [x] Proceso reproducible desde el crudo (`notebooks/procesar.py`).
-  - [x] El dataset limpio sigue siendo suficiente: 117.430 juegos con género y precio; 10.479 pasan
-        el filtro de ≥500 reseñas; 99.085 son de pago — volumen suficiente para cuartiles de precio.
+- **Tool and rationale:** Python (pandas) — decided in Phase 0. Confirmed in this phase: the
+  process requires reproducibility over a 400 MB file with a structural header bug, something
+  not viable to audit by hand in a spreadsheet.
+- **Log:** full detail of the 8 transformations in `bitacora-limpieza.md`. Reproducible script:
+  `notebooks/procesar.py` (runs end to end from the raw file).
+- **Key transformations:**
+  1. Fixed the header bug (`DiscountDLC count` → `Discount` + `DLC count`).
+  2. Excluded 2 games with a future release date.
+  3. Dropped 15 columns as out of scope (high nulls or unstructured text).
+  4. 0 duplicates by `AppID` (reconfirmed).
+  5. Excluded 8,423 games with no genre assigned (not classifiable).
+  6. Enrichment with BLS CPI-U: `anio_lanzamiento`, `antiguedad_anios`, `precio_ajustado_usd`
+     (2026 base year, with a declared limitation: the 2026 CPI is a partial average of only 4
+     months).
+  7. Calculated `pct_resenas_positivas` (null, not 0%, for the 34,589 games with zero reviews).
+  8. Derived dataset `steam_juegos_por_genero.csv`, exploded by genre (decision confirmed with
+     the user: a game with N genres produces N rows).
+- **Count reconciliation:** 125,855 initial − 2 (future date) − 0 (duplicates) − 8,423 (no
+  genre) = **117,430 final**. Verified with an `assert` in the script. The genre-exploded
+  dataset has 338,575 game-genre rows.
+- **Outliers investigated:** `DLC count` maxes at 3,703 (Fantasy Grounds VTT, verified as real,
+  not removed). `Metacritic score` uses `0` as a "no data" sentinel (documented, not confused
+  with a real score).
+- **Note for Phase 4:** Steam's `Genres` taxonomy mixes real genres (`Action`, `RPG`) with
+  content descriptors/business model tags (`Violent`, `Gore`, `Free To Play`, `Early Access`).
+  33 unique values in total — Phase 4 will need to decide how to handle them.
+- **Exit gate:** ✅ complete
+  - [x] Tool chosen and justified.
+  - [x] Every type of dirty data explicitly reviewed.
+  - [x] Full log with what, why, how and rows affected per transformation.
+  - [x] Count reconciliation checks out (verified with `assert`).
+  - [x] Outliers investigated and the decision justified.
+  - [x] Process reproducible from the raw file (`notebooks/procesar.py`).
+  - [x] The clean dataset is still sufficient: 117,430 games with genre and price; 10,479 pass
+        the ≥500-review filter; 99,085 are paid — enough volume for price quartiles.
 
-## 4. Analizar
+## 4. Analyse
 
-**Estado:** ✅ cerrada (aprobada por el usuario el 2026-07-28)
+**Status:** ✅ closed (approved by the user on 2026-07-28)
 
-- **Herramienta:** Python (pandas). Scripts reproducibles: `notebooks/analizar.py` (estadística
-  descriptiva, cuartiles, tabla género × franja) y `notebooks/verificar.py` (las 7 verificaciones
-  de abajo). Tablas exportadas en `salidas/tablas/genero_x_franja_precio.csv` y
+- **Tool:** Python (pandas). Reproducible scripts: `notebooks/analizar.py` (descriptive
+  statistics, quartiles, genre × band table) and `notebooks/verificar.py` (the 7 checks below).
+  Tables exported to `salidas/tablas/genero_x_franja_precio.csv` and
   `salidas/tablas/resumen_por_genero.csv`.
 
-- **Decisión de alcance (confirmada con el usuario antes de tabular):** la columna `Genres` mezcla
-  géneros de juego reales con descriptores de contenido (`Violent`, `Gore`, `Nudity`,
-  `Sexual Content`), etiquetas de software no-juego (`Utilities`, `Education`, `Accounting`,
-  `Movie`, etc. — 17 valores) y modelo de negocio/estado (`Free To Play`, `Early Access`). Se
-  excluyeron del análisis género × precio (29.101 de 338.575 filas juego-género), dejando
-  **10 géneros de juego reales**: Action, Adventure, Casual, Indie, Massively Multiplayer, RPG,
-  Racing, Simulation, Sports, Strategy.
+- **Scope decision (confirmed with the user before tabulating):** the `Genres` column mixes real
+  game genres with content descriptors (`Violent`, `Gore`, `Nudity`, `Sexual Content`), non-game
+  software tags (`Utilities`, `Education`, `Accounting`, `Movie`, etc. — 17 values) and business
+  model/status (`Free To Play`, `Early Access`). These were excluded from the genre × price
+  analysis (29,101 of 338,575 game-genre rows), leaving **10 real game genres**: Action,
+  Adventure, Casual, Indie, Massively Multiplayer, RPG, Racing, Simulation, Sports, Strategy.
 
-- **Estadística descriptiva (base `steam_juegos_limpios`, 117.430 juegos):**
-  - `precio_ajustado_usd`: media 5,89 USD, mediana 3,13 USD, P75 6,84 USD (asimetría a la derecha,
-    máx. 1.284,88 USD — colas de bundles/software premium).
-  - `pct_resenas_positivas` (82.841 juegos con ≥1 reseña): media 75,83%, mediana 81,82%, P25 65%.
-  - `antiguedad_anios`: mediana 4 años, P75 7 años.
-  - 99.085 juegos de pago, 18.345 F2P (Price = 0). 10.479 juegos pasan el filtro ≥500 reseñas.
+- **Descriptive statistics (base `steam_juegos_limpios`, 117,430 games):**
+  - `precio_ajustado_usd`: mean $5.89, median $3.13, P75 $6.84 (right-skewed, max $1,284.88 —
+    tails from bundles/premium software).
+  - `pct_resenas_positivas` (82,841 games with ≥1 review): mean 75.83%, median 81.82%, P25 65%.
+  - `antiguedad_anios`: median 4 years, P75 7 years.
+  - 99,085 paid games, 18,345 F2P (Price = 0). 10,479 games pass the ≥500-review filter.
 
-- **Base de análisis y cuartiles:** filtro pago (`Price > 0`) + ≥500 reseñas → 9.048 juegos
-  (23.822 filas juego-género tras explotar por género real). Cuartiles de `precio_ajustado_usd`
-  calculados sobre esa base: **Q1 ≤ 3,25 · Q2 3,25–6,46 · Q3 6,46–12,36 · Q4 > 12,36 USD**.
+- **Analysis base and quartiles:** paid filter (`Price > 0`) + ≥500 reviews → 9,048 games (23,822
+  game-genre rows after exploding by real genre). Quartiles of `precio_ajustado_usd` calculated
+  on that base: **Q1 ≤ $3.25 · Q2 $3.25-$6.46 · Q3 $6.46-$12.36 · Q4 > $12.36**.
 
-- **Hallazgos:**
-  1. **La franja más barata (Q1) es sistemáticamente la de peor recepción en los 10 géneros.**
-     Mediana de % reseñas positivas en Q1 va de 76,0% (Massively Multiplayer) a 86,3% (Casual),
-     siempre la más baja o empatada-más-baja de las 4 franjas de su género
+- **Findings:**
+  1. **The cheapest band (Q1) is systematically the worst-reception band across all 10 genres.**
+     Median % positive reviews in Q1 ranges from 76.0% (Massively Multiplayer) to 86.3% (Casual),
+     always the lowest or tied-lowest of the 4 bands in its genre
      (`salidas/tablas/genero_x_franja_precio.csv`).
-  2. **La mejor recepción se concentra en Q3 (6,46–12,36 USD) o Q4 (>12,36 USD), no en el precio
-     más alto absoluto.** En Action, Indie, Simulation, Casual y Strategy el pico es Q3; en
-     Adventure, Racing, Sports y RPG es Q4. Ningún género tiene su mejor recepción en Q1 o Q2.
-  3. **Efecto de tamaño moderado y consistente:** la diferencia entre Q1 y la mejor franja va de
-     2,50 p.p. (RPG) a 5,04 p.p. (Adventure). Es una diferencia real pero no dramática — no
-     sostiene un argumento de "el precio por sí solo duplica la recepción", solo un patrón
-     direccional.
-  4. **Tres candidatos con mejor combinación de efecto + volumen + recepción absoluta:**
-     Adventure (4.030 juegos, +5,04 p.p., mediana máxima 87,5%), Indie (5.561 juegos, +3,94 p.p.,
-     mediana máxima 88,2%) y Casual (2.230 juegos, +3,31 p.p., la mediana más alta de los 10
-     géneros en su mejor franja: 89,6%). Quedan como insumo para las recomendaciones de fase 6,
-     no como decisión cerrada aquí.
-  5. **Massively Multiplayer es un caso aparte:** patrón no monótono (Q2 es su mejor franja, no
-     Q3/Q4), la mediana más baja de los 10 géneros en las 4 franjas (74–79%), y el n más chico
-     (176 juegos) — evidencia débil, se documenta como tal, no se descarta ni se recomienda.
+  2. **The best reception clusters at Q3 ($6.46-$12.36) or Q4 (>$12.36), not the highest price
+     overall.** In Action, Indie, Simulation, Casual and Strategy the peak is Q3; in Adventure,
+     Racing, Sports and RPG it's Q4. No genre has its best reception in Q1 or Q2.
+  3. **Moderate and consistent effect size:** the gap between Q1 and the best band ranges from
+     2.50 p.p. (RPG) to 5.04 p.p. (Adventure). It's a real but not dramatic difference — it
+     doesn't support a "price alone doubles reception" claim, only a directional pattern.
+  4. **Three candidates with the best combination of effect + volume + absolute reception:**
+     Adventure (4,030 games, +5.04 p.p., peak median 87.5%), Indie (5,561 games, +3.94 p.p., peak
+     median 88.2%) and Casual (2,230 games, +3.31 p.p., the highest median of the 10 genres in
+     its best band: 89.6%). These feed into the Phase 6 recommendations, not a closed decision
+     here.
+  5. **Massively Multiplayer is a case apart:** a non-monotonic pattern (Q2 is its best band, not
+     Q3/Q4), the lowest median of the 10 genres across all 4 bands (74-79%), and the smallest n
+     (176 games) — weak evidence, documented as such, neither dismissed nor recommended.
 
-- **Verificaciones aplicadas** (`notebooks/verificar.py`):
-  1. **Sensatez:** cuartiles ajustados (3,25/6,46/12,36) vs. precio de lista bruto sin ajustar
-     (2,49/4,99/9,99) — mismo orden de magnitud, la corrección por inflación no distorsiona la
-     escala. Plausible para catálogo indie/AA de Steam.
-  2. **Recálculo por vía alterna:** la tabla género × franja se recalculó con `pivot_table` en vez
-     de `groupby.agg`; coincide punto por punto (chequeo puntual Action × Q3: 86,64% en ambas vías).
-  3. **Confusor de antigüedad:** correlación `antiguedad_anios` vs `pct_resenas_positivas` = −0,087
-     (prácticamente nula) — la antigüedad no explica el patrón de precio. Se documenta que
-     correlación no implica causalidad.
-  4. **Control por antigüedad:** se repitió la tabla separando juegos recientes (≤ mediana de
-     antigüedad) vs. viejos, para Action/Adventure/Indie/Casual. El patrón "Q1 es el peor" se
-     sostiene en ambas bandas — no es un artefacto de que los juegos baratos sean simplemente más
-     viejos.
-  5. **Efecto de tamaño cuantificado:** ver hallazgo 3 (2,50–5,04 p.p.), no solo dirección.
-  6. **Recálculo manual de `pct_resenas_positivas`** sobre 5 juegos al azar (`Positive/(Positive+
-     Negative)×100`) — coincide exacto con la columna precalculada en los 5 casos.
-  7. **Desagregación / robustez de muestra:** n por género en la base de análisis va de 176
-     (Massively Multiplayer) a 5.561 (Indie). Los géneros con n < 350 (Massively Multiplayer,
-     Sports, Racing) se reportan pero con advertencia de muestra chica.
+- **Checks applied** (`notebooks/verificar.py`):
+  1. **Sanity:** adjusted quartiles (3.25/6.46/12.36) vs. raw unadjusted list price
+     (2.49/4.99/9.99) — same order of magnitude, the inflation correction doesn't distort the
+     scale. Plausible for Steam's indie/AA catalogue.
+  2. **Recalculation via an alternate path:** the genre × band table was recalculated with
+     `pivot_table` instead of `groupby.agg`; matches point for point (spot-check Action × Q3:
+     86.64% both ways).
+  3. **Age as a confounder:** correlation of `antiguedad_anios` vs `pct_resenas_positivas` =
+     -0.087 (practically null) — age doesn't explain the price pattern. Documented that
+     correlation doesn't imply causation.
+  4. **Age control:** the table was repeated splitting recent games (≤ median age) from older
+     ones, for Action/Adventure/Indie/Casual. The "Q1 is worst" pattern holds in both bands — not
+     an artefact of cheap games simply being older.
+  5. **Effect size quantified:** see finding 3 (2.50-5.04 p.p.), not just direction.
+  6. **Manual recalculation of `pct_resenas_positivas`** on 5 random games
+     (`Positive/(Positive+Negative)×100`) — matches the precomputed column exactly in all 5
+     cases.
+  7. **Sample-size robustness by genre:** n in the analysis base ranges from 176 (Massively
+     Multiplayer) to 5,561 (Indie). Genres with n < 350 (Massively Multiplayer, Sports, Racing)
+     are reported but flagged with a small-sample warning.
 
-- **Lo que los datos no responden:**
-  - No hay reseñas fechadas individuales — el proxy de antigüedad del juego (ya previsto en fase 1)
-    no captura si la recepción de un juego cambió con el tiempo, solo la recepción acumulada según
-    cuán viejo es el juego.
-  - No establece causalidad: el patrón "precio medio-alto → mejor recepción" es una correlación
-    descriptiva; puede reflejar selección (estudios que cobran más también invierten más en calidad)
-    y no que subir el precio mejore la recepción.
-  - No cubre la cola larga (<500 reseñas, 34,1% del catálogo con 0 reseñas) — excluida por decisión
-    de fase 1, documentada como entregable adicional en fase 6.
-  - Massively Multiplayer tiene evidencia insuficiente (n=176) para una recomendación firme por sí
-    solo.
+- **What the data doesn't answer:**
+  - No dated individual reviews — the game-age proxy (already anticipated in Phase 1) doesn't
+    capture whether a game's reception changed over time, only cumulative reception as a function
+    of how old the game is.
+  - Doesn't establish causality: the "mid-to-high price → better reception" pattern is a
+    descriptive correlation; it may reflect selection (studios that charge more also invest more
+    in quality) rather than raising price improving reception.
+  - Doesn't cover the long tail (<500 reviews, 34.1% of the catalogue with 0 reviews) — excluded
+    by a Phase 1 decision, documented as an additional deliverable in Phase 6.
+  - Massively Multiplayer has insufficient evidence (n=176) for a firm recommendation on its own.
 
-- **Puerta de salida:** ✅ completa
-  - [x] Estadística descriptiva completa y revisada.
-  - [x] Cada pregunta de la fase 1 tiene una respuesta basada en un cálculo concreto.
-  - [x] Todos los cálculos documentados y reproducibles (`notebooks/analizar.py`,
+- **Exit gate:** ✅ complete
+  - [x] Full, reviewed descriptive statistics.
+  - [x] Every Phase 1 question has an answer backed by a concrete calculation.
+  - [x] Every calculation documented and reproducible (`notebooks/analizar.py`,
         `notebooks/verificar.py`).
-  - [x] Cada hallazgo pasó prueba de sensatez y recálculo por vía alterna.
-  - [x] Efectos cuantificados, no solo direccionales (2,50–5,04 p.p.).
-  - [x] Interpretaciones alternativas consideradas y descartadas con evidencia (antigüedad como
-        confusor, descartada con correlación ≈0 y control por banda de antigüedad).
-  - [x] Lo que los datos no pueden responder está escrito como limitación.
-  - [x] Ninguna afirmación causal apoyada solo en correlación.
+  - [x] Every finding passed a sanity check and an alternate-path recalculation.
+  - [x] Effects quantified, not just directional (2.50-5.04 p.p.).
+  - [x] Alternative interpretations considered and ruled out with evidence (age as a confounder,
+        ruled out with ≈0 correlation and age-band control).
+  - [x] What the data cannot answer is written down as a limitation.
+  - [x] No causal claim rests on correlation alone.
 
-## 5. Compartir
+## 5. Share
 
-**Estado:** ✅ cerrada (aprobada por el usuario el 2026-07-28)
+**Status:** ✅ closed (approved by the user on 2026-07-28)
 
-- **Audiencia(s) y entregables** (confirmados con el usuario antes de construir):
-  1. **Comité de inversión** (ejecutiva): `entregables/resumen_ejecutivo.docx` — sin jerga,
-     conclusión primero, 4 figuras con su interpretación, limitaciones visibles.
-  2. **Comité de inversión** (~30 min, presentación en vivo): `entregables/presentacion_fase5.pptx`
-     — 13 diapositivas: título con la conclusión, contexto, método, 4 hallazgos (uno por
-     diapositiva), candidatos (stat callouts), limitaciones, próximo paso (fase 6), anexo de
-     metodología/verificaciones, anexo de Q&A preparado, cierre. Notas de orador incluidas.
-  3. **Analista senior / repo de portafolio** (técnica): `notebooks/caso_steam_precio_recepcion.ipynb`
-     — notebook narrado de punta a punta (contexto → fuentes → limpieza → análisis → verificaciones
-     → visualización), cada celda de código ejecutada sin errores, con interpretación después de
-     cada resultado.
+- **Audience(s) and deliverables** (confirmed with the user before building):
+  1. **Investment committee** (executive): `entregables/resumen_ejecutivo.docx` — no jargon,
+     conclusion first, 4 figures with interpretation, limitations visible.
+  2. **Investment committee** (~30 min, live presentation): `entregables/presentacion_fase5.pptx`
+     — 13 slides: title with the conclusion, context, method, 4 findings (one per slide),
+     candidates (stat callouts), limitations, next step (Phase 6), methodology/checks appendix,
+     prepared Q&A appendix, close. Speaker notes included.
+  3. **Senior analyst / portfolio repo** (technical): `notebooks/caso_steam_precio_recepcion.ipynb`
+     — end-to-end narrated notebook (context → sources → cleaning → analysis → checks →
+     visualisation), every code cell runs without errors, with interpretation after each result.
 
-- **Visualizaciones** (spotlighting: 4 de los 5 hallazgos de fase 4 sostienen el argumento; el
-  quinto —Massively Multiplayer con evidencia débil— se documenta en texto, no se grafica aparte).
-  Archivos en `salidas/graficos/`, generadas con `notebooks/graficos.py`:
-  1. `01_q1_vs_mejor_franja.png` — *"La franja más barata es la de peor recepción en los 10 géneros
-     de Steam"* (barras agrupadas Q1 vs. mejor franja, ordenadas por efecto).
-  2. `02_heatmap_genero_franja.png` — *"La mejor recepción se concentra en precios medios-altos
-     (Q3/Q4), nunca en el más barato"* (mapa de calor género × franja).
-  3. `03_ranking_efecto_candidatos.png` — *"Adventure, Indie y Casual combinan mejor efecto,
-     volumen y recepción absoluta"* (ranking de efecto, candidatos resaltados).
-  4. `04_control_antiguedad.png` — *"El patrón se sostiene en juegos recientes y viejos: no es un
-     efecto de antigüedad"* (barras agrupadas por banda de antigüedad, 4 géneros).
-  - Checklist de diseño aplicado en las 4: eje de barras desde cero, un color protagonista (azul)
-    con gris de contexto, orden por valor, nota de fuente al pie, texto alternativo escrito para
-    cada figura (ver notebook), sin elementos 3D.
+- **Visualisations** (spotlighting: 4 of the 5 Phase 4 findings carry the argument; the fifth —
+  Massively Multiplayer, weak evidence — is documented in text, not charted separately). Files in
+  `salidas/graficos/`, generated with `notebooks/graficos.py`:
+  1. `01_q1_vs_mejor_franja.png` — *"The cheapest price band has the worst reception in every
+     Steam genre"* (grouped bars, Q1 vs. best band, sorted by effect).
+  2. `02_heatmap_genero_franja.png` — *"The best reception clusters at mid-to-high prices (Q3/Q4),
+     never the cheapest"* (heatmap, genre × band).
+  3. `03_ranking_efecto_candidatos.png` — *"Adventure, Indie and Casual combine the best effect,
+     volume and absolute reception"* (effect ranking, candidates highlighted).
+  4. `04_control_antiguedad.png` — *"The pattern holds for both recent and older games: it is not
+     an age effect"* (grouped bars by age band, 4 genres).
+  - Design checklist applied to all 4: bar axis starts at zero, one lead colour (blue) with grey
+    for context, sorted by value, source note in the footer, alt text written for every figure
+    (see notebook), no 3D elements.
 
-- **Q&A preparado** (anexo de la presentación, 5 preguntas más incómodas con respuesta escrita):
-  1. ¿No es esto solo que los juegos caros vienen de estudios más grandes con mejor marketing?
-  2. ¿Por qué excluir el 34% de juegos sin reseñas? ¿No se pierden oportunidades ahí?
-  3. ¿Qué tan sensible es el resultado a cómo definieron las franjas de precio?
-  4. ¿Por qué confiar en un dataset de terceros y no en datos directos de Valve?
-  5. ¿Cuál es el número exacto detrás de "Adventure es el mejor candidato"?
+- **Prepared Q&A** (presentation appendix, the 5 toughest questions with a written answer):
+  1. Isn't this just that expensive games come from bigger studios with better marketing?
+  2. Why exclude the 34% of games with no reviews? Aren't opportunities lost there?
+  3. How sensitive is the result to how the price bands were defined?
+  4. Why trust a third-party dataset instead of direct data from Valve?
+  5. What's the exact number behind "Adventure is the best candidate"?
 
-- **Puerta de salida:** ✅ completa
-  - [x] Audiencia definida y el formato ajustado a ella (ejecutiva, presentación en vivo, técnica).
-  - [x] Cada gráfico tiene un titular que enuncia el hallazgo.
-  - [x] Cada gráfico pasa el filtro de tres partes (pregunta práctica / datos / elemento visual).
-  - [x] Tipo de gráfico justificado por el objetivo (barras para comparación, mapa de calor para
-        intensidad por dos dimensiones).
-  - [x] Ejes, orden, colores y anotaciones revisados (verificación visual de las 4 figuras y las 13
-        diapositivas antes de publicar).
-  - [x] Accesibilidad verificada (texto alternativo por figura, información no codificada solo con
-        color, tabla de datos subyacente disponible en `salidas/tablas/`).
-  - [x] Limitaciones y supuestos visibles, no escondidos en un anexo (sección propia en el resumen
-        ejecutivo y en la presentación).
-  - [x] Q&A preparado con las cinco preguntas más difíciles.
+- **Exit gate:** ✅ complete
+  - [x] Audience defined and format matched to it (executive, live presentation, technical).
+  - [x] Every chart has a headline that states the finding.
+  - [x] Every chart passes the three-part filter (practical question / data / visual element).
+  - [x] Chart type justified by the goal (bars for comparison, heatmap for intensity across two
+        dimensions).
+  - [x] Axes, order, colours and annotations reviewed (visual check of the 4 figures and the 13
+        slides before publishing).
+  - [x] Accessibility verified (alt text per figure, information not encoded by colour alone,
+        underlying data table available in `salidas/tablas/`).
+  - [x] Limitations and assumptions visible, not hidden in an appendix (own section in both the
+        executive summary and the presentation).
+  - [x] Q&A prepared for the five hardest questions.
 
-## 6. Actuar
+## 6. Act
 
-**Estado:** ⬜ abierta — entregables escritos, pendientes de publicación y ensayo por el usuario
+**Status:** ⬜ 8 of 9 — content and publication done; presentation rehearsal open (see exit gate)
 
-- **Cadena hallazgo → insight → recomendación:** los 5 hallazgos de fase 4 se elevaron a insight y
-  a recomendación en la tabla de apertura de `entregables/recomendaciones.md`.
+- **Finding → insight → recommendation chain:** the 5 Phase 4 findings were elevated to insight
+  and recommendation in the opening table of `entregables/recomendaciones.md`.
 
-- **Recomendaciones** (fichas completas en `entregables/recomendaciones.md`), priorizadas por
-  impacto contra esfuerzo:
+- **Recommendations** (full cards in `entregables/recomendaciones.md`), prioritised by impact
+  against effort:
 
-| # | Acción | Evidencia | Impacto | Esfuerzo | Prioridad |
+| # | Action | Evidence | Impact | Effort | Priority |
 |---|---|---|---|---|---|
-| R1 | Concentrar la due diligence del próximo ciclo en Adventure, Indie y Casual | Las 3 medianas de recepción más altas (86,2 / 86,7 / 88,2%) + efecto de franja 3,31–5,05 p.p. + volumen (4.030 / 5.561 / 2.230 juegos) | Alto — reasigna esfuerzo al 49,6% de la base analizada; **no** es impacto financiero | Bajo | 1 |
-| R2 | Añadir al cribado la posición del catálogo en los cuartiles de precio; marcar >50% en Q1 | Q1 es la peor franja mediana en los 10 géneros (76,0–86,3%); sobrevive al control por antigüedad | Medio — efecto de 2,50–5,05 p.p., por eso es señal de alerta y no criterio de descarte | Bajo | 2 |
-| R3 | Despriorizar Massively Multiplayer este ciclo; Sports y Racing como "evidencia insuficiente" | MMO: mediana 76,4%, patrón no monótono, n=176. Sports n=329, Racing n=338, bajo el umbral n<350 de la verificación 7 | Medio — libera el 3,5% de la base | Bajo | 3 |
+| R1 | Concentrate next cycle's due diligence on Adventure, Indie and Casual | The 3 highest reception medians (86.2 / 86.7 / 88.2%) + band effect of 3.31-5.05 p.p. + volume (4,030 / 5,561 / 2,230 games) | High — reallocates effort across 49.6% of the analysed base; **not** a financial impact | Low | 1 |
+| R2 | Add the catalogue's price-quartile position to screening; flag >50% in Q1 | Q1 is the worst median band across all 10 genres (76.0-86.3%); survives the age control | Medium — effect of 2.50-5.05 p.p., which is why it's a warning signal, not a disqualifying criterion | Low | 2 |
+| R3 | Deprioritise Massively Multiplayer this cycle; Sports and Racing as "insufficient evidence" | MMO: 76.4% median, non-monotonic pattern, n=176. Sports n=329, Racing n=338, below the n<350 threshold from check 7 | Medium — frees up 3.5% of the base | Low | 3 |
 
-  Cada ficha incluye además métrica de éxito con plazo y el riesgo/supuesto crítico. El riesgo más
-  incómodo está declarado en R3: las reseñas de Steam miden mal un modelo de ingresos recurrentes
-  como el de los MMO, así que despriorizar por evidencia débil podría ser exactamente cómo se
-  pierde una oportunidad.
+  Each card also includes a success metric with a deadline and the critical risk/assumption. The
+  most uncomfortable risk is stated in R3: Steam reviews poorly measure a recurring-revenue model
+  like MMOs, so deprioritising on weak evidence could be exactly how an opportunity is missed.
 
-- **Limitaciones** (7 completas en `entregables/recomendaciones.md`): sin causalidad (la lectura
-  alternativa de selección —quien cobra más invierte más en producción— no se puede descartar con
-  estos datos); sin datos de ingresos ni ventas; sesgo de supervivencia; la cola larga (34,1% del
-  catálogo con 0 reseñas) queda fuera por el filtro de ≥500; reseñas agregadas y no fechadas; año
-  base del CPI parcial (ene–abr 2026); fuente de tercera parte (falla el componente "Original" de
+- **Limitations** (7 full ones in `entregables/recomendaciones.md`): no causality (the
+  alternative selection reading — those who charge more also invest more in production — cannot
+  be ruled out with this data); no revenue or sales data; survivorship bias; the long tail (34.1%
+  of the catalogue with 0 reviews) is excluded by the ≥500 filter; aggregated, undated reviews;
+  partial CPI base year (Jan-Apr 2026); third-party source (fails the "Original" component of
   ROCCC).
 
-- **Datos adicionales deseables:** ingresos o unidades vendidas reales; reseñas individuales con
-  fecha; presupuesto de producción o tamaño del estudio (permitiría probar directamente la lectura
-  alternativa de selección); histórico de precios y descuentos; retención y gasto por usuario
-  (para evaluar MMO con la métrica adecuada a su modelo); datos de consolas y móvil.
+- **Desirable additional data:** real revenue or units sold; dated individual reviews; production
+  budget or studio size (would let us directly test the alternative selection reading); price and
+  discount history; retention and spend per user (to evaluate MMOs with a metric suited to their
+  model); console and mobile data.
 
-- **Próximos pasos:** (1) bajar el umbral a 50 y 100 reseñas para analizar la cola larga —
-  desbloquea si el fondo abre un carril de inversión en estudios pequeños; (2) cruzar los 3 géneros
-  priorizados con una fuente de ingresos — convierte la priorización de horas en priorización de
-  capital; (3) análisis de sensibilidad de las franjas (quintiles y bandas fijas).
+- **Next steps:** (1) lower the threshold to 50 and 100 reviews to analyse the long tail —
+  unlocks whether the fund should open an investment lane for small studios; (2) cross-reference
+  the 3 prioritised genres with a revenue source — turns hour-prioritisation into
+  capital-prioritisation; (3) sensitivity analysis on the bands (quintiles and fixed bands).
 
-- **Publicado en:** ⬜ pendiente — repositorio público de GitHub. `README.md` escrito y listo en la
-  raíz del repo, con las 4 figuras enlazadas por ruta relativa y el crudo enlazado a Kaggle en vez
-  de subido. Falta crear el repo y sustituir el marcador `<URL-DEL-REPOSITORIO>` en el bloque de
-  reproducibilidad del README y en `entregables/portafolio-indice.md`.
+- **Published at:** ✅ https://github.com/BobbyTarantino099/steam-price-reception — public
+  repository. Full narrative lives on the portfolio site:
+  https://juanesportfolio.com/cases/steam-price-reception/. `README.md` is a short abstract
+  linking to both. Raw data linked to Kaggle instead of uploaded.
 
-- **Qué demuestra este caso frente a los demás:** traducir una pregunta de inversión a un análisis
-  de pricing + sentimiento sobre un dataset con una imperfección estructural real (cabecera rota
-  que desalinea columnas, no nulos triviales), enriquecido con una segunda fuente (CPI-U) para
-  comparar 29 años en dólares reales — y, sobre todo, descartar la explicación alternativa
-  (antigüedad) con código antes de publicar el hallazgo, además de reportar como insuficiente el
-  género que no encajó en la conclusión. Matriz de cobertura y huecos del portafolio en
+- **What this case demonstrates versus the others:** turning an investment question into a
+  pricing + sentiment analysis on a dataset with a real structural flaw (a broken header that
+  misaligns columns, not trivial nulls), enriched with a second source (CPI-U) to compare 29
+  years in real dollars — and, above all, ruling out the alternative explanation (age) with code
+  before publishing the finding, plus reporting the genre that didn't fit the conclusion as
+  insufficient rather than omitting it. Portfolio coverage matrix and gaps in
   `entregables/portafolio-indice.md`.
 
-- **Puerta de salida:** ⬜ parcial — 6 de 9
-  - [x] Cada hallazgo se elevó a insight y a recomendación.
-  - [x] Cada recomendación tiene acción, evidencia, impacto, métrica, riesgo y esfuerzo.
-  - [x] Recomendaciones priorizadas por impacto contra esfuerzo.
-  - [x] Limitaciones y datos adicionales documentados.
-  - [x] `README.md` público completo y con los gráficos visibles (rutas relativas verificadas).
-  - [x] Sin datos sensibles ni infracciones de licencia: sin PII, crudo no subido, atribución
-        CC BY 4.0 presente en el README.
-  - [ ] **Análisis reproducible desde el crudo por un tercero** — los pasos están escritos, pero
-        nadie externo los ha corrido en una máquina limpia. Pendiente de prueba real.
-  - [x] Escrito qué habilidad demuestra este caso frente a los demás del portafolio.
-  - [ ] **Versiones de la presentación ensayadas: 30 minutos y 3 minutos** — no ensayadas. La de
-        30 min tiene su mazo (fase 5); la de 3 min no tiene guion escrito todavía.
+- **Exit gate:** ⬜ 8 of 9 — one item left, and it can't be closed by a script
+  - [x] Every finding was elevated to insight and recommendation.
+  - [x] Every recommendation has action, evidence, impact, metric, risk and effort.
+  - [x] Recommendations prioritised by impact against effort.
+  - [x] Limitations and additional data documented.
+  - [x] Public `README.md` complete, linking to the site and the case's full evidence.
+  - [x] No sensitive data or licence violations: no PII, raw file not uploaded, CC BY 4.0
+        attribution present.
+  - [x] **Analysis reproducible from the raw file by a third party** — verified in practice, not
+        just on paper: `datos/limpios/` was deleted and `procesar.py` + `analizar.py` were rerun
+        from the raw file on a machine other than the one the scripts were authored on. The
+        regenerated tables matched the committed ones byte for byte, and the count reconciliation
+        held (125,855 − 2 − 0 − 8,423 = 117,430). This is the strongest local proxy available for
+        a true third-party run; nobody outside this project has cloned the repo and reproduced it
+        yet.
+  - [x] Written what skill this case demonstrates relative to the rest of the portfolio.
+  - [ ] **Presentation versions rehearsed out loud: 30 minutes and 3 minutes** — both are
+        *written* (the 30-min deck at `entregables/presentacion_fase5.pptx`, the 3-min script at
+        `entregables/guion-presentacion.md`), but neither has been rehearsed. This is the one exit
+        criterion nothing but doing it can satisfy — it stays open until the user has said both
+        out loud, ideally to someone outside the field.
 
-  ⬜ Pendiente adicional fuera de la puerta: publicar el repositorio y actualizar el enlace.
+## 7. Portfolio
 
-## Bitácora de decisiones
-| Fecha | Decisión | Motivo | Alternativa descartada |
+**Status:** ⬜ open — repository and site published; presentation rehearsal is the one item left
+before this case can be called fully closed (see Phase 6 exit gate)
+
+- **Coverage matrix and gaps:** see `entregables/portafolio-indice.md`. As the first case, it
+  covers "find patterns" as the problem type, Python as the tool, and video games as the domain.
+  The gaps it leaves for the next case — SQL as the lead tool, longitudinal data, a different
+  problem type, a domain outside video games — are documented there.
+- **Case repository:** public, at
+  https://github.com/BobbyTarantino099/steam-price-reception. Contains the full evidence layer:
+  this file, the cleaning log, source records, data dictionary, reproducible scripts, notebook,
+  and deliverables.
+- **Site page:** https://juanesportfolio.com/cases/steam-price-reception/ — the case's L1 card
+  (home page) and L2 narrative (case page), built from this repository's front-matter-driven
+  content contract.
+
+## Decision log
+| Date | Decision | Reason | Alternative discarded |
 |---|---|---|---|
-| 2026-07-28 | Sector: plataformas digitales / pricing + sentimiento en Steam | Interés del usuario + encaja con cliente inversor | Estudios/publishers, esports, comunidad |
-| 2026-07-28 | Cliente ficticio: fondo de inversión | Fuerza una decisión concreta (dónde invertir) | Estudio decidiendo qué lanzar; plataforma optimizando catálogo |
-| 2026-07-28 | Dataset: Steam Games Dataset (fronkongames), CC BY 4.0 | Tiene price + genres + positive/negative en un solo archivo, volumen y recencia adecuados, saturación media | Game Recommendations on Steam (antonkozyriev) — descartado por saturación alta; Steam games complete dataset (trolukovich, 2019) — descartado por antigüedad y reseñas solo en texto libre |
-| 2026-07-28 | Ventana temporal: todo el histórico disponible | El usuario prefiere cobertura completa, con tiempo disponible de sobra | Acotar a últimos 5 o 3 años |
-| 2026-07-28 | Umbral mínimo de reseñas: ≥500 | Prioriza confiabilidad estadística sobre cobertura de cola larga | Umbral de 50 o 100 reseñas |
-| 2026-07-28 | Franjas de precio por cuartiles calculados sobre los datos reales | Evita bandas arbitrarias impuestas de antemano | Bandas fijas predefinidas |
-| 2026-07-28 | F2P excluido del análisis de franja de precio | No tienen franja de precio real; se documentan aparte | Incluir F2P como franja "Gratis"; excluirlos de todo el caso |
-| 2026-07-28 | Corregir sesgo de antigüedad/inflación con CPI externo + control por año, en vez de declarar limitación | El usuario prefiere rigor metodológico sobre simplicidad, con tiempo disponible de sobra | Dejarlo como limitación declarada; acotar ventana a 5 años |
-| 2026-07-28 | Aprobar CPI-U de BLS como segunda fuente de datos | Pasa ROCCC sin fallas: primera parte, dominio público, cubre 1997-2026 | Buscar un índice de inflación de terceros o de otra región |
-| 2026-07-28 | No subir el CSV crudo (~400 MB) al repo público; enlazar a Kaggle en su lugar | El archivo excede lo razonable para un repo de portafolio | Subir una muestra reducida del crudo para reproducibilidad end-to-end |
-| 2026-07-28 | Explotar por género (una fila por juego-género) en vez de quedarse con el género primario o solo mono-género | El usuario prefirió que cada género reciba su propia evidencia, aceptando que un juego cuente en varios grupos | Género primario únicamente; o descartar juegos multi-género |
-| 2026-07-28 | Excluir 8.423 juegos sin género asignado | No se pueden ubicar en ninguna combinación género × precio, que es el corazón de la pregunta | Imputar una categoría "Sin clasificar" |
-| 2026-07-28 | Usar promedio parcial de CPI 2026 (ene-abr) como año base | Es el único dato disponible a la fecha de descarga; se declara como limitación en vez de esperar el año completo | Usar 2025 como año base (año completo más reciente) |
-| 2026-07-28 | Recomendaciones limitadas a priorizar due diligence por género, sin tesis de pricing para participadas | El dataset no tiene ingresos ni ventas; recomendar "sube el precio" excedería lo que la evidencia sostiene | Añadir una tesis de pricing operativa; añadir una recomendación de ampliar el análisis como R4 |
-| 2026-07-28 | Tres recomendaciones, no más | El marco pide priorizar por impacto contra esfuerzo y mandar el resto a exploración futura; la cola larga y la sensibilidad de franjas van a "próximos pasos" | Enunciar 5-6 recomendaciones incluyendo las de análisis futuro |
-| 2026-07-28 | Reportar Massively Multiplayer como despriorizado por evidencia insuficiente, con el contraargumento escrito en su propia ficha | Omitir el género que no encajó habría sido el error más fácil; declararlo con su riesgo es más creíble | Omitirlo del entregable; o recomendarlo/descartarlo con la evidencia que hay |
-| 2026-07-28 | No subir el crudo al repo; enlazar a Kaggle en las instrucciones de reproducción | Coherente con la decisión de fase 2; 400 MB no caben razonablemente en un repo de portafolio | Subir una muestra reducida para reproducibilidad end-to-end |
-| 2026-07-28 | Excluir de "género" los descriptores de contenido (Violent, Gore, Nudity, Sexual Content), etiquetas de software no-juego (17 valores) y Free To Play/Early Access | Son etiquetas de la taxonomía Steam que no representan un género de videojuego real; mezclarlas distorsionaría la tabla género × precio | Mantener las 33 etiquetas tal cual; o excluir solo el subconjunto de software no-juego |
+| 2026-07-28 | Sector: digital platforms / pricing + sentiment on Steam | User interest + fits an investor client | Studios/publishers, esports, community |
+| 2026-07-28 | Fictional client: investment fund | Forces a concrete decision (where to invest) | A studio deciding what to launch; a platform optimising its catalogue |
+| 2026-07-28 | Dataset: Steam Games Dataset (fronkongames), CC BY 4.0 | Has price + genres + positive/negative in a single file, adequate volume and recency, medium saturation | Game Recommendations on Steam (antonkozyriev) — discarded for high saturation; Steam games complete dataset (trolukovich, 2019) — discarded for age and free-text-only reviews |
+| 2026-07-28 | Time window: the full available history | User prefers full coverage, with time to spare | Limiting to the last 5 or 3 years |
+| 2026-07-28 | Minimum review threshold: ≥500 | Prioritises statistical reliability over long-tail coverage | Threshold of 50 or 100 reviews |
+| 2026-07-28 | Price bands by quartiles calculated on the real data | Avoids arbitrary bands imposed upfront | Predefined fixed bands |
+| 2026-07-28 | F2P excluded from the price-band analysis | They have no real price band; documented separately | Including F2P as a "Free" band; excluding them from the whole case |
+| 2026-07-28 | Correct the age/inflation bias with an external CPI + year control, instead of declaring it a limitation | User prefers methodological rigour over simplicity, with time to spare | Leaving it as a declared limitation; limiting the window to 5 years |
+| 2026-07-28 | Approve BLS CPI-U as the second data source | Passes ROCCC with no failures: first-party, public domain, covers 1997-2026 | Looking for a third-party inflation index or one from another region |
+| 2026-07-28 | Don't upload the raw CSV (~400 MB) to the public repo; link to Kaggle instead | The file exceeds what's reasonable for a portfolio repo | Uploading a reduced sample of the raw file for end-to-end reproducibility |
+| 2026-07-28 | Explode by genre (one row per game-genre) instead of keeping only the primary genre or mono-genre games | The user preferred every genre to get its own evidence, accepting that a game counts in several groups | Primary genre only; or discarding multi-genre games |
+| 2026-07-28 | Exclude 8,423 games with no genre assigned | They can't be placed in any genre × price combination, which is the core of the question | Imputing an "Unclassified" category |
+| 2026-07-28 | Use the partial 2026 CPI average (Jan-Apr) as the base year | It's the only data available as of the download date; declared as a limitation instead of waiting for the full year | Using 2025 as the base year (most recent complete year) |
+| 2026-07-28 | Recommendations limited to prioritising due diligence by genre, without a pricing thesis for portfolio companies | The dataset has no revenue or sales data; recommending "raise the price" would exceed what the evidence supports | Adding an operational pricing thesis; adding a recommendation to expand the analysis as R4 |
+| 2026-07-28 | Three recommendations, no more | The framework calls for prioritising by impact against effort and sending the rest to future exploration; the long tail and band sensitivity go to "next steps" | Stating 5-6 recommendations including future-analysis ones |
+| 2026-07-28 | Report Massively Multiplayer as deprioritised for insufficient evidence, with the counter-argument written in its own card | Omitting the genre that didn't fit would have been the easiest mistake; declaring it with its risk is more credible | Omitting it from the deliverable; or recommending/dismissing it with the evidence at hand |
+| 2026-07-28 | Don't upload the raw file to the repo; link to Kaggle in the reproduction instructions | Consistent with the Phase 2 decision; 400 MB doesn't reasonably fit in a portfolio repo | Uploading a reduced sample for end-to-end reproducibility |
+| 2026-07-28 | Exclude from "genre" the content descriptors (Violent, Gore, Nudity, Sexual Content), non-game software tags (17 values), and Free To Play/Early Access | These are Steam taxonomy tags that don't represent a real video game genre; mixing them in would distort the genre × price table | Keeping all 33 tags as-is; or excluding only the non-game-software subset |
+| 2026-08-10 | Translate the full case repository (CASO.md, log, source records, deliverables) to English | The site is English-only; a visitor reaching the repo from the site would otherwise hit a language switch mid-evidence-chain | Keeping the repo in Spanish and only translating the site's L2 page |
+| 2026-08-10 | Regenerate the 4 charts with English text before publishing | A Spanish chart on an English page is the most visible inconsistency the site could ship with | Publishing the English page with the original Spanish charts and a note |
+| 2026-08-10 | Rewrite README.md as a short abstract linking to the site, instead of duplicating the full narrative | The full story now lives on the site (L2); a second full copy in the repo would drift out of sync with it over time | Keeping the long-form README as the primary narrative surface |
