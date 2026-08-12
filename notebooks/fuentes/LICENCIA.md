@@ -10,7 +10,9 @@ cayendo en DejaVu Sans sin avisar.
 
 ## Licencia
 
-**Inter** — Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)
+**Inter** — Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
+
+(Cita literal del metadato `name` ID 0 del propio TTF.)
 
 Distribuida bajo la **SIL Open Font License, Version 1.1**.
 Texto completo: <https://openfontlicense.org> · <https://github.com/rsms/inter/blob/master/LICENSE.txt>
@@ -22,5 +24,6 @@ Lo que la OFL exige y aquí se cumple:
   conservar el nombre "Inter" es legítimo.
 - No se vende la fuente por separado.
 
-> Pendiente: `site/public/fonts/` distribuye los `woff2` de Inter y Fraunces **sin** su nota de
-> licencia. Conviene añadir la equivalente ahí.
+La nota equivalente del sitio está en `site/public/fonts/OFL.txt`, que además reproduce el
+texto completo de la OFL 1.1 — la licencia exige que el texto viaje con la fuente, no solo un
+enlace a él.

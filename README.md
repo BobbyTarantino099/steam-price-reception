@@ -54,8 +54,8 @@ git clone https://github.com/BobbyTarantino099/steam-price-reception.git
 cd steam-price-reception
 
 # 2. Dependencies
-pip install pandas matplotlib seaborn python-docx
-npm install --prefix notebooks pptxgenjs
+pip install -r requirements.txt
+npm install --prefix notebooks
 
 # 3. Download the raw file (not in the repo, ~400 MB)
 #    https://www.kaggle.com/datasets/fronkongames/steam-games-dataset
