@@ -72,6 +72,7 @@ for i, row in enumerate(f1.itertuples()):
             color=estilo.ACENTO, **estilo._prop('medio', 9.5))
 ax.set_xlim(70, 95)
 ax.set_xlabel('Median % positive reviews')
+estilo.leyenda(ax)
 estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/01_q1_vs_mejor_franja.png')
 
 # =================================================================
@@ -176,10 +177,10 @@ for ax, genero in zip(ejes, generos_fig4):
     ax.spines['left'].set_visible(False)
 
 ejes[0].set_ylabel('Median % positive reviews')
-leg = ejes[0].legend(loc='lower left', handletextpad=0.5, borderaxespad=0.3)
-for t in leg.get_texts():
-    t.set_color(estilo.TINTA_SUAVE)
-    t.set_fontsize(9)
+# Los cuatro paneles comparten eje Y, asi que abrir hueco en el primero lo abre
+# en todos. Las barras arrancan en cero y llegan a ~89 de 100: sin holgura no
+# hay un solo rincon libre y la leyenda acababa entre las barras de Q1.
+estilo.leyenda(ejes[0])
 estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/04_control_antiguedad.png')
 
 print('Figuras generadas:')

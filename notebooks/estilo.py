@@ -63,6 +63,27 @@ _RAMPA_TEXTO_BLANCO = 4
 FIRMA = "JEA"
 
 # ---------------------------------------------------------------------------
+# Ritmo vertical de la cabecera
+# ---------------------------------------------------------------------------
+#
+# En PUNTOS, no en fracción del lienzo. Es la diferencia entre un diseño y una
+# coincidencia: la tipografía se mide en puntos, así que si el aire se expresa
+# como fracción de la altura de la figura, el mismo diseño se aprieta al bajar
+# el lienzo y se desparrama al subirlo. Con una figura de 6.2" de alto el aire
+# entre titular y subtítulo llegaba a cero y los dos se solapaban.
+#
+# Tocar estos cuatro números cambia el espaciado de todas las figuras a la vez,
+# que es justo lo que hace que se vean como una familia.
+
+TAM_TITULAR = 19.0
+TAM_SUBTITULO = 11.5
+TAM_PERIODO = 8.5
+
+GAP_TITULAR_SUB = 14.0    # pt entre el titular y el subtítulo
+GAP_SUB_PERIODO = 9.0     # pt entre el subtítulo y la línea de periodo
+GAP_CABECERA_EJE = 26.0   # pt entre la cabecera y el borde superior de los ejes
+
+# ---------------------------------------------------------------------------
 # Tipografía
 # ---------------------------------------------------------------------------
 
@@ -144,6 +165,10 @@ def figura(titular, subtitulo=None, periodo=None, fuente=None, nota=None,
     que define la métrica, y una tercera línea opcional en versalitas con el
     alcance. El salto de tamaño y color entre los tres niveles es deliberado.
 
+    El aire entre niveles sale de las constantes `GAP_*`, en puntos, y el alto
+    de cada nivel se mide del texto ya dibujado. Así el espaciado es el mismo en
+    pulgadas sea cual sea el tamaño del lienzo.
+
     `abajo` no baja de 0.16: por debajo de eso el rótulo del eje X se solapa con
     la nota de fuente cuando la nota ocupa dos líneas.
     """
@@ -152,25 +177,38 @@ def figura(titular, subtitulo=None, periodo=None, fuente=None, nota=None,
 
     # Ancho de envoltura estimado a partir del ancho real en pulgadas.
     pulgadas = figsize[0] * ancho_util
-    y = 0.965
 
-    fig.text(izquierda, y, "\n".join(textwrap.wrap(titular, width=int(pulgadas * 6.4))),
-             va="top", ha="left", color=TINTA, linespacing=1.22,
-             **_prop("negrita", 19))
-    y -= 0.052 * (1 + titular.count("\n") + len(titular) // int(pulgadas * 6.4))
+    def gap(puntos):
+        """Puntos -> fracción de la altura de la figura."""
+        return puntos / (figsize[1] * 72.0)
+
+    def poner(texto, y, tam, peso, color, interlineado, ancho):
+        """Dibuja un nivel de la cabecera y devuelve la `y` del siguiente.
+
+        Mide el alto real del texto ya compuesto en vez de estimarlo a partir
+        del número de caracteres: `textwrap` ya sabe cuántas líneas salieron, y
+        el renderizador sabe cuánto ocupan.
+        """
+        t = fig.text(izquierda, y, "\n".join(textwrap.wrap(texto, width=ancho)),
+                     va="top", ha="left", color=color, linespacing=interlineado,
+                     **_prop(peso, tam))
+        caja = t.get_window_extent(renderer=fig.canvas.get_renderer())
+        return y - caja.transformed(fig.transFigure.inverted()).height
+
+    y = 0.965
+    y = poner(titular, y, TAM_TITULAR, "negrita", TINTA, 1.22, int(pulgadas * 6.4))
 
     if subtitulo:
-        fig.text(izquierda, y, "\n".join(textwrap.wrap(subtitulo, width=int(pulgadas * 11))),
-                 va="top", ha="left", color=TINTA_SUAVE, linespacing=1.3,
-                 **_prop("regular", 11.5))
-        y -= 0.038 * (1 + len(subtitulo) // int(pulgadas * 11))
+        y -= gap(GAP_TITULAR_SUB)
+        y = poner(subtitulo, y, TAM_SUBTITULO, "regular", TINTA_SUAVE, 1.3,
+                  int(pulgadas * 11))
 
     if periodo:
-        fig.text(izquierda, y - 0.004, periodo.upper(), va="top", ha="left",
-                 color=TINTA_TENUE, **_prop("medio", 8.5))
-        y -= 0.036
+        y -= gap(GAP_SUB_PERIODO)
+        y = poner(periodo.upper(), y, TAM_PERIODO, "medio", TINTA_TENUE, 1.2,
+                  int(pulgadas * 15))
 
-    arriba = max(y - 0.035, 0.45)
+    arriba = max(y - gap(GAP_CABECERA_EJE), 0.45)
     ax = fig.add_axes([izquierda, abajo, ancho_util, arriba - abajo])
 
     pie = []
@@ -211,6 +249,71 @@ def destacar(categorias, protagonistas, acento=ACENTO, resto=CONTEXTO):
     return [acento if c in p else resto for c in categorias]
 
 
+def leyenda(ax, tam=9, holgura_max=0.45, **kwargs):
+    """Leyenda en el hueco más libre de datos, enmarcada como un bloque.
+
+    Dos decisiones, y son independientes:
+
+    **Dónde.** `loc="best"` — matplotlib ya evalúa el solapamiento con líneas,
+    parches y colecciones y elige el ancla con menos. Fijarla a mano
+    (`"lower right"`) funciona hasta que los datos cambian de forma: así fue
+    como una leyenda acabó metida entre las barras del primer grupo.
+
+    **Cómo.** Relleno opaco y borde fino. El relleno importa tanto como el
+    borde: es lo que la despega de la cuadrícula y la convierte en un bloque en
+    vez de texto flotando encima del gráfico.
+
+    Y una red de seguridad: si ni el mejor sitio está libre —barras desde cero
+    que llenan el panel, por ejemplo— `best` devuelve "la esquina menos mala" y
+    el problema sigue ahí. En ese caso se sube el techo del eje hasta abrirle
+    sitio de verdad. La base en cero no se toca, así que no distorsiona nada:
+    solo añade aire arriba.
+    """
+    fig = ax.figure
+    y0, y1 = ax.get_ylim()
+
+    def dibujar():
+        leg = ax.legend(loc="best", frameon=True, fancybox=False, framealpha=1.0,
+                        facecolor=PAPEL, edgecolor=REGLA, borderpad=0.7,
+                        labelspacing=0.55, handletextpad=0.6, **kwargs)
+        leg.get_frame().set_linewidth(0.9)
+        for t in leg.get_texts():
+            t.set_color(TINTA_SUAVE)
+            t.set_fontsize(tam)
+        return leg
+
+    leg = dibujar()
+    if not _pisa_datos(ax, leg):
+        return leg
+
+    # Ampliar el eje sin más no basta: `best` ya eligió y no se reevalúa solo.
+    # Hay que abrir el hueco y volver a colocarla, en el mínimo paso que sirva.
+    for paso in (0.12, 0.22, 0.34, holgura_max):
+        ax.set_ylim(y0, y0 + (y1 - y0) * (1 + paso))
+        leg.remove()
+        fig.canvas.draw()
+        leg = dibujar()
+        if not _pisa_datos(ax, leg):
+            return leg
+    return leg
+
+
+def _pisa_datos(ax, leg) -> bool:
+    """¿La leyenda se superpone a alguna marca dibujada?"""
+    r = ax.figure.canvas.get_renderer()
+    caja = leg.get_window_extent(renderer=r)
+    for art in list(ax.patches) + list(ax.lines) + list(ax.collections):
+        try:
+            otra = art.get_window_extent(renderer=r)
+        except (AttributeError, ValueError, TypeError):
+            continue
+        if otra.width <= 0 or otra.height <= 0:
+            continue
+        if caja.overlaps(otra):
+            return True
+    return False
+
+
 def anotar(ax, texto, xy, xytexto, color=TINTA_SUAVE, tam=9, flecha=True):
     """Anotación directiva, con el estilo de las referencias: texto corto que
     señala un punto concreto en vez de un párrafo debajo del gráfico."""
@@ -248,13 +351,11 @@ def dumbbell(ax, categorias, desde, hasta, etiqueta_desde=None, etiqueta_hasta=N
     ax.grid(axis="x", zorder=0)
     ax.set_axisbelow(True)
 
+    # Solo registra las marcas de la clave. Quién dibuja la leyenda es
+    # `leyenda()`, para que haya una sola forma de colocarla.
     if etiqueta_desde and etiqueta_hasta:
         ax.scatter([], [], s=62, color=color_desde, label=etiqueta_desde)
         ax.scatter([], [], s=72, color=color_hasta, label=etiqueta_hasta)
-        leg = ax.legend(loc="lower right", handletextpad=0.4, borderaxespad=0.2)
-        for t in leg.get_texts():
-            t.set_color(TINTA_SUAVE)
-            t.set_fontsize(9)
 
 
 def _color_celda(valor, vmin, vmax):
