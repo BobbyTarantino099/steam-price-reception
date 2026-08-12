@@ -1,18 +1,18 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
-import seaborn as sns
 from pathlib import Path
+
+import estilo
 
 RUTA_BASE = Path(__file__).resolve().parents[1]
 (RUTA_BASE / 'salidas' / 'graficos').mkdir(parents=True, exist_ok=True)
-sns.set_style('white')
-plt.rcParams['font.size'] = 11
 
-GRIS = '#b0b0b0'
-AZUL = '#1f5fa8'
-NARANJA = '#d9822b'
+estilo.aplicar()
+
+FUENTE = ('Steam Games Dataset (fronkongames, Kaggle, CC BY 4.0) + BLS CPI-U')
+NOTA = ('Base: 8,998 paid games with >=500 reviews, 10 real genres. '
+        'Price adjusted for inflation, 2026 base year (partial average, Jan-Apr)')
+PERIODO = 'Steam catalogue, 1997-2026'
 
 df_g = pd.read_csv(f'{RUTA_BASE}/datos/limpios/steam_juegos_por_genero.csv', low_memory=False)
 
@@ -36,17 +36,9 @@ tabla = (base.groupby(['Genres', 'franja_precio'], observed=True)
          .reset_index())
 tabla_robusta = tabla[tabla['n'] >= 20].copy()
 
-FUENTE = ('Source: Steam Games Dataset (fronkongames, Kaggle, CC BY 4.0) + BLS CPI-U. '
-          'Base: 8,998 paid games with >=500 reviews, 10 real genres (excludes content '
-          'descriptors, software tags and Free To Play/Early Access). Price adjusted for '
-          'inflation, 2026 base year (partial average, Jan-Apr).')
+CANDIDATOS = ['Adventure', 'Indie', 'Casual']
 
-def nota_fuente(fig, texto=FUENTE):
-    fig.text(0.01, -0.02, texto, ha='left', va='top', fontsize=7.5, color='#555555', wrap=True)
-
-# =================================================================
-# FIGURA 1 - Q1 vs mejor franja por genero (barras agrupadas)
-# =================================================================
+# Q1 y mejor franja por genero
 filas = []
 for genero, sub in tabla_robusta.groupby('Genres'):
     q1_val = sub.loc[sub['franja_precio'] == etiquetas[0], 'mediana_pct']
@@ -56,80 +48,99 @@ for genero, sub in tabla_robusta.groupby('Genres'):
     mejor = sub.loc[sub['mediana_pct'].idxmax()]
     filas.append({'Genres': genero, 'Q1': q1_val, 'mejor': mejor['mediana_pct'],
                   'franja_mejor': mejor['franja_precio'], 'dif': mejor['mediana_pct'] - q1_val})
-f1 = pd.DataFrame(filas).sort_values('dif', ascending=True)
-
-fig, ax = plt.subplots(figsize=(9, 6.3))
-y = np.arange(len(f1))
-ax.barh(y - 0.2, f1['Q1'], height=0.4, color=GRIS, label='Cheapest band (Q1)')
-ax.barh(y + 0.2, f1['mejor'], height=0.4, color=AZUL, label="Genre's best band")
-ax.set_yticks(y)
-ax.set_yticklabels(f1['Genres'])
-ax.set_xlim(0, 108)
-ax.set_xlabel('Median % positive reviews')
-fig.suptitle('The cheapest price band has the worst reception in every Steam genre',
-             fontsize=14, weight='bold', x=0.01, ha='left', y=1.03)
-ax.set_title('Difference between Q1 (<=$3.25) and each genre\'s best price band, in p.p.',
-             fontsize=10, color='#444444', loc='left', pad=12)
-for i, row in enumerate(f1.itertuples()):
-    ax.text(row.mejor + 1.5, i + 0.2, f'+{row.dif:.1f} p.p.', va='center', fontsize=9, color=AZUL)
-    ax.text(row.Q1 + 1.5, i - 0.2, f'{row.Q1:.1f}%', va='center', fontsize=8.5, color='#555555')
-fig.legend(loc='upper right', bbox_to_anchor=(0.98, 0.97), ncol=2, frameon=False, fontsize=9)
-sns.despine(left=True, bottom=False)
-ax.grid(axis='x', color='#eeeeee')
-nota_fuente(fig)
-fig.savefig(f'{RUTA_BASE}/salidas/graficos/01_q1_vs_mejor_franja.png', dpi=150, bbox_inches='tight')
-plt.close(fig)
+f1 = pd.DataFrame(filas).sort_values('dif', ascending=False)
 
 # =================================================================
-# FIGURA 2 - Mapa de calor genero x franja (mediana % positivas)
+# FIGURA 1 - Dumbbell: Q1 contra la mejor franja, por genero
+#
+# Antes eran barras agrupadas, que obligan a comparar dos longitudes
+# desde ejes distintos. El dumbbell muestra la diferencia como una
+# distancia, que es exactamente lo que dice el hallazgo.
+# =================================================================
+fig, ax = estilo.figura(
+    titular='The cheapest price band has the worst reception in every Steam genre',
+    subtitulo="Median share of positive reviews: cheapest band vs. the genre's best band",
+    periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(9.2, 6.8),
+    izquierda=0.175,
+)
+estilo.dumbbell(
+    ax, list(f1['Genres']), list(f1['Q1']), list(f1['mejor']),
+    etiqueta_desde='Cheapest band (Q1)', etiqueta_hasta="Genre's best band",
+)
+for i, row in enumerate(f1.itertuples()):
+    ax.text(row.mejor + 0.6, i, f'+{row.dif:.1f}', va='center', ha='left',
+            color=estilo.ACENTO, **estilo._prop('medio', 9.5))
+ax.set_xlim(70, 95)
+ax.set_xlabel('Median % positive reviews')
+estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/01_q1_vs_mejor_franja.png')
+
+# =================================================================
+# FIGURA 2 - Tabla-matriz: genero x franja
+#
+# Antes era un mapa de calor, que obliga a leer el color y adivinar el
+# numero. Aqui manda el numero y el color acompana.
 # =================================================================
 pivot = tabla_robusta.pivot(index='Genres', columns='franja_precio', values='mediana_pct')
-orden_genero = pivot.mean(axis=1).sort_values(ascending=False).index
-pivot = pivot.loc[orden_genero]
+orden = pivot.mean(axis=1).sort_values(ascending=False).index
+pivot = pivot.loc[orden]
+n_por_genero = (base.groupby('Genres', observed=True)['AppID'].count()
+                .reindex(orden).astype(int))
 
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.heatmap(pivot, annot=True, fmt='.1f', cmap='Blues', cbar_kws={'label': 'Median % positive reviews'},
-            linewidths=0.5, linecolor='white', ax=ax, vmin=70, vmax=92)
-fig.suptitle('The best reception clusters at mid-to-high prices (Q3/Q4), never the cheapest',
-             fontsize=13, weight='bold', x=0.01, ha='left', y=1.04)
-ax.set_title('Median % positive reviews by genre and adjusted price band',
-             fontsize=10, color='#444444', loc='left', pad=10)
-ax.set_xlabel('')
-ax.set_ylabel('')
-nota_fuente(fig)
-fig.savefig(f'{RUTA_BASE}/salidas/graficos/02_heatmap_genero_franja.png', dpi=150, bbox_inches='tight')
-plt.close(fig)
+fig, ax = estilo.figura(
+    titular='The best reception clusters at mid-to-high prices, never the cheapest',
+    subtitulo='Median share of positive reviews, by genre and inflation-adjusted price band',
+    periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(9.2, 7.0),
+    izquierda=0.235, abajo=0.16,
+)
+estilo.tabla_matriz(
+    ax,
+    filas=list(pivot.index),
+    columnas=['Q1  <=$3.25', 'Q2  $3.25-6.46', 'Q3  $6.46-12.36', 'Q4  >$12.36'],
+    valores=[[None if pd.isna(v) else float(v) for v in fila] for fila in pivot.values],
+    etiqueta_filas=[f'{n:,} games' for n in n_por_genero],
+)
+estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/02_heatmap_genero_franja.png')
 
 # =================================================================
-# FIGURA 3 - Ranking de efecto, candidatos destacados
+# FIGURA 3 - Ranking del efecto, candidatos destacados
 # =================================================================
-f3 = f1.sort_values('dif', ascending=True).copy()
-CANDIDATOS = {'Adventure', 'Indie', 'Casual'}
-colores = [AZUL if g in CANDIDATOS else GRIS for g in f3['Genres']]
+f3 = f1.sort_values('dif', ascending=False)
+colores = estilo.destacar(list(f3['Genres']), CANDIDATOS)
 
-fig, ax = plt.subplots(figsize=(8.5, 6.2))
+fig, ax = estilo.figura(
+    titular='Adventure, Indie and Casual combine the best effect, volume and reception',
+    subtitulo='Gap in percentage points between the cheapest band and each genre\'s best band',
+    periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(9.2, 6.6),
+    izquierda=0.175,
+)
 y = np.arange(len(f3))
-ax.barh(y, f3['dif'], color=colores)
+# Lollipop en vez de barra: la masa de la barra no aporta, el extremo si.
+for i, (v, c) in enumerate(zip(f3['dif'], colores)):
+    ax.plot([0, v], [i, i], color=c, linewidth=2.4, solid_capstyle='round', zorder=1)
+ax.scatter(f3['dif'], y, s=95, color=colores, zorder=2, edgecolor=estilo.PAPEL, linewidth=1.6)
+for i, row in enumerate(f3.itertuples()):
+    destacado = row.Genres in CANDIDATOS
+    ax.text(row.dif + 0.14, i, f'{row.dif:.2f}', va='center', ha='left',
+            color=estilo.ACENTO if destacado else estilo.TINTA_SUAVE,
+            **estilo._prop('medio' if destacado else 'regular', 9.5))
 ax.set_yticks(y)
 ax.set_yticklabels(f3['Genres'])
-ax.set_xlabel('Difference in percentage points (best band - Q1)')
-fig.suptitle('Adventure, Indie and Casual combine the best effect, volume and reception',
-             fontsize=13, weight='bold', x=0.01, ha='left', y=1.03)
-ax.set_title('Price effect on reception by genre (p.p.); blue = candidates with the strongest combined evidence',
-             fontsize=9.5, color='#444444', loc='left', pad=12)
-for i, row in enumerate(f3.itertuples()):
-    ax.text(row.dif + 0.05, i, f'{row.dif:.2f}', va='center', fontsize=9,
-            color=AZUL if row.Genres in CANDIDATOS else '#555555', weight='bold' if row.Genres in CANDIDATOS else 'normal')
-ax.set_xlim(0, f3['dif'].max() + 1)
-sns.despine(left=True)
-ax.grid(axis='x', color='#eeeeee')
-nota_fuente(fig)
-fig.savefig(f'{RUTA_BASE}/salidas/graficos/03_ranking_efecto_candidatos.png', dpi=150, bbox_inches='tight')
-plt.close(fig)
+ax.invert_yaxis()
+ax.set_xlim(0, f3['dif'].max() + 1.0)
+ax.set_xlabel('Percentage points')
+ax.grid(axis='x')
+ax.set_axisbelow(True)
+# Sin flecha: colocada justo debajo de la fila que comenta, en la banda vacia
+# entre dos filas. Una flecha hasta el punto cruzaria las etiquetas vecinas.
+ax.text(0.12, 0.52, 'Highest effect, and 4,030 games of evidence',
+        va='center', ha='left', color=estilo.TINTA_SUAVE, **estilo._prop('regular', 9))
+estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/03_ranking_efecto_candidatos.png')
 
 # =================================================================
-# FIGURA 4 - Control por antiguedad (recientes vs viejos) para los 3 candidatos + Action de referencia
+# FIGURA 4 - Control por antiguedad, small multiples
 # =================================================================
+import matplotlib.pyplot as plt
+
 mediana_antig = base['antiguedad_anios'].median()
 base['banda'] = np.where(base['antiguedad_anios'] <= mediana_antig, 'Recent', 'Older')
 generos_fig4 = ['Adventure', 'Indie', 'Casual', 'Action']
@@ -139,29 +150,37 @@ tabla4 = (sub4.groupby(['Genres', 'banda', 'franja_precio'], observed=True)
           .reset_index())
 tabla4 = tabla4[tabla4['n'] >= 20]
 
-fig, axes = plt.subplots(1, 4, figsize=(15, 5.3), sharey=True)
-fig.subplots_adjust(top=0.72, bottom=0.12)
-for ax, genero in zip(axes, generos_fig4):
+fig, ax_madre = estilo.figura(
+    titular='The pattern holds for recent and older games alike: it is not an age effect',
+    subtitulo='Median share of positive reviews by price band, splitting games at the median age',
+    periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(10.4, 6.2),
+    izquierda=0.07, abajo=0.17,
+)
+caja = ax_madre.get_position()
+ax_madre.remove()
+ejes = fig.subplots(1, 4, sharey=True, gridspec_kw=dict(
+    left=caja.x0, right=caja.x1, bottom=caja.y0, top=caja.y1, wspace=0.16))
+
+for ax, genero in zip(ejes, generos_fig4):
     d = tabla4[tabla4['Genres'] == genero]
-    for banda, color, offset in [('Recent', AZUL, -0.18), ('Older', GRIS, 0.18)]:
+    for banda, color, off in [('Recent', estilo.ACENTO, -0.19), ('Older', estilo.CONTEXTO, 0.19)]:
         dd = d[d['banda'] == banda].set_index('franja_precio').reindex(etiquetas)
-        x = np.arange(len(etiquetas)) + offset
-        ax.bar(x, dd['mediana_pct'], width=0.36, color=color, label=banda)
+        ax.bar(np.arange(len(etiquetas)) + off, dd['mediana_pct'], width=0.36,
+               color=color, label=banda, zorder=2)
     ax.set_xticks(np.arange(len(etiquetas)))
     ax.set_xticklabels(['Q1', 'Q2', 'Q3', 'Q4'])
-    ax.set_title(genero, fontsize=11, weight='bold', pad=8)
+    ax.set_title(genero, color=estilo.TINTA, pad=8, **estilo._prop('medio', 11))
     ax.set_ylim(0, 100)
-    sns.despine(ax=ax, left=True)
-    ax.grid(axis='y', color='#eeeeee')
-axes[0].set_ylabel('Median % positive reviews')
-axes[0].legend(loc='lower right', frameon=False, fontsize=8)
-fig.suptitle('The pattern holds for both recent and older games: it is not an age effect',
-             fontsize=14, weight='bold', x=0.01, ha='left', y=0.99)
-fig.text(0.01, 0.885, 'Median % positive reviews by price band, splitting recent games (<= median age) from older ones',
-         fontsize=10, color='#444444')
-nota_fuente(fig)
-fig.savefig(f'{RUTA_BASE}/salidas/graficos/04_control_antiguedad.png', dpi=150, bbox_inches='tight')
-plt.close(fig)
+    ax.grid(axis='y', zorder=0)
+    ax.set_axisbelow(True)
+    ax.spines['left'].set_visible(False)
+
+ejes[0].set_ylabel('Median % positive reviews')
+leg = ejes[0].legend(loc='lower left', handletextpad=0.5, borderaxespad=0.3)
+for t in leg.get_texts():
+    t.set_color(estilo.TINTA_SUAVE)
+    t.set_fontsize(9)
+estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/04_control_antiguedad.png')
 
 print('Figuras generadas:')
 import os

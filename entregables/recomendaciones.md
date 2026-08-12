@@ -28,7 +28,7 @@ historical catalogue. Tables: `salidas/tablas/genero_x_franja_precio.csv` and
 - **Evidence:** of the 10 real game genres analysed, these three are the only ones that combine
   (a) high absolute reception — median positive-review share of 88.2% (Casual), 86.7% (Indie) and
   86.2% (Adventure), the three highest in the set — with (b) a clear price-band effect — +3.31
-  p.p. (Casual), +3.94 p.p. (Indie) and +5.05 p.p. (Adventure) between the cheapest band and each
+  p.p. (Casual), +3.94 p.p. (Indie) and +5.04 p.p. (Adventure) between the cheapest band and each
   genre's best — and (c) sufficient target volume: 2,230, 5,561 and 4,030 games respectively,
   against 176 for the smallest genre.
   Source: `salidas/tablas/resumen_por_genero.csv` and `genero_x_franja_precio.csv`.
@@ -62,7 +62,7 @@ historical catalogue. Tables: `salidas/tablas/genero_x_franja_precio.csv` and
   medians ranging from 76.0% (Massively Multiplayer) to 86.3% (Casual), always the lowest or
   tied-lowest in its genre. The pattern holds when splitting recent from older games (check 4,
   `notebooks/verificar.py`), and age doesn't explain it (age × reception correlation = -0.087).
-- **Expected impact:** the band effect is 2.51 to 5.05 p.p. of positive reviews. It's a real but
+- **Expected impact:** the band effect is 2.50 to 5.04 p.p. of positive reviews. It's a real but
   moderate difference. **Explicit assumption:** that's why this field is used as a warning signal
   that triggers review, not an automatic disqualifying criterion — the effect size doesn't justify
   ruling out a studio based on price band alone.

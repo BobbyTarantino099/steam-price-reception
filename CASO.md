@@ -377,8 +377,8 @@ is documented instead of applying it silently.
 
 | # | Action | Evidence | Impact | Effort | Priority |
 |---|---|---|---|---|---|
-| R1 | Concentrate next cycle's due diligence on Adventure, Indie and Casual | The 3 highest reception medians (86.2 / 86.7 / 88.2%) + band effect of 3.31-5.05 p.p. + volume (4,030 / 5,561 / 2,230 games) | High — reallocates effort across 49.6% of the analysed base; **not** a financial impact | Low | 1 |
-| R2 | Add the catalogue's price-quartile position to screening; flag >50% in Q1 | Q1 is the worst median band across all 10 genres (76.0-86.3%); survives the age control | Medium — effect of 2.50-5.05 p.p., which is why it's a warning signal, not a disqualifying criterion | Low | 2 |
+| R1 | Concentrate next cycle's due diligence on Adventure, Indie and Casual | The 3 highest reception medians (86.2 / 86.7 / 88.2%) + band effect of 3.31-5.04 p.p. + volume (4,030 / 5,561 / 2,230 games) | High — reallocates effort across 49.6% of the analysed base; **not** a financial impact | Low | 1 |
+| R2 | Add the catalogue's price-quartile position to screening; flag >50% in Q1 | Q1 is the worst median band across all 10 genres (76.0-86.3%); survives the age control | Medium — effect of 2.50-5.04 p.p., which is why it's a warning signal, not a disqualifying criterion | Low | 2 |
 | R3 | Deprioritise Massively Multiplayer this cycle; Sports and Racing as "insufficient evidence" | MMO: 76.4% median, non-monotonic pattern, n=176. Sports n=329, Racing n=338, below the n<350 threshold from check 7 | Medium — frees up 3.5% of the base | Low | 3 |
 
   Each card also includes a success metric with a deadline and the critical risk/assumption. The
