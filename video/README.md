@@ -5,7 +5,8 @@ finding, the objection, and an invitation to read the case. It is built from the
 files: the real rows of the raw CSV, the analysis tables and the cleaned dataset. No number in
 it is typed by hand.
 
-**Watch it:** on YouTube *(link added once published)*.
+**Watch it:** [on YouTube](https://youtu.be/zHiZ3W4nJxE) (unlisted: reachable from this link and
+the case page, not from search).
 **Script:** [`guion.md`](guion.md). Read its *Notes on the claims* before changing a sentence.
 
 The video is rendered with [HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen,
