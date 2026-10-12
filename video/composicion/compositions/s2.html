@@ -1,0 +1,271 @@
+<template id="s2-template">
+  <div data-composition-id="s2" data-width="1920" data-height="1080">
+    <!--
+      Scene 2 · The data. Local time; on the root it starts at 8.7 s, so every time here is
+      the transcript time minus 8.7. Rows and inflation come from assets/datos.js
+      (video/datos_video.py), never typed by hand.
+    -->
+    <div id="s2-kicker">
+      <div id="s2-rows">125,855</div>
+      <div id="s2-rows-label">rows in the raw file</div>
+    </div>
+
+    <div id="s2-chip-bad" class="chip">39 column names · 40 values per row</div>
+    <div id="s2-chip-good" class="chip">Header repaired</div>
+
+    <div id="s2-table"></div>
+
+    <div id="s2-inflation">
+      <p id="s2-inf-title">29 years of prices, compared in real dollars</p>
+      <div id="s2-axis">
+        <div id="s2-axis-line"></div>
+        <div id="s2-span"><span>29 years</span></div>
+        <div id="s2-arrow"></div>
+        <div id="s2-tag-then" class="tag"><b id="s2-then-amount"></b><span id="s2-then-year"></span></div>
+        <div id="s2-tag-now" class="tag now"><b id="s2-now-amount"></b><span id="s2-now-year"></span></div>
+      </div>
+      <p id="s2-inf-note"></p>
+    </div>
+
+    <style>
+      [data-composition-id="s2"] #s2-kicker { position: absolute; left: 128px; top: 104px; }
+      [data-composition-id="s2"] #s2-rows {
+        font-size: 84px; font-weight: 700; letter-spacing: -0.035em; color: var(--acento);
+        font-variant-numeric: tabular-nums; line-height: 1;
+      }
+      [data-composition-id="s2"] #s2-rows-label { margin-top: 10px; font-size: 26px; font-weight: 600; color: var(--tinta-suave); }
+
+      [data-composition-id="s2"] .chip {
+        position: absolute; right: 128px; top: 196px;
+        padding: 12px 22px; border-radius: 999px; font-size: 24px; font-weight: 600; color: #fff;
+      }
+      [data-composition-id="s2"] #s2-chip-bad { background: var(--contra); }
+      [data-composition-id="s2"] #s2-chip-good { background: var(--acento); }
+
+      [data-composition-id="s2"] #s2-table {
+        position: absolute; left: 128px; top: 300px; width: 1664px;
+        font-size: 26px; font-variant-numeric: tabular-nums;
+      }
+      [data-composition-id="s2"] .row { display: flex; border-bottom: 2px solid var(--regla); }
+      [data-composition-id="s2"] .head { border-bottom: 3px solid var(--tinta); }
+      [data-composition-id="s2"] .cell {
+        position: relative; height: 76px; padding: 0 18px;
+        display: flex; align-items: center; overflow: hidden; white-space: nowrap;
+      }
+      [data-composition-id="s2"] .head .cell { font-weight: 700; height: 84px; }
+      /* Header names are stacked (raw name / repaired name) and centred with flexbox, not a
+         CSS transform: GSAP animates yPercent on them and a transform here would add up. */
+      [data-composition-id="s2"] .head .cell span {
+        position: absolute; inset: 0; padding: 0 18px; display: flex; align-items: center;
+      }
+      [data-composition-id="s2"] .num { justify-content: flex-end; }
+      [data-composition-id="s2"] .head .num span { justify-content: flex-end; }
+
+      [data-composition-id="s2"] #s2-inflation { position: absolute; inset: 0; }
+      [data-composition-id="s2"] #s2-inf-title {
+        position: absolute; left: 128px; top: 168px; width: 1300px;
+        font-size: 54px; font-weight: 700; letter-spacing: -0.02em;
+      }
+      [data-composition-id="s2"] #s2-axis { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      [data-composition-id="s2"] #s2-axis-line {
+        position: absolute; left: 220px; top: 700px; width: 1480px; height: 4px;
+        background: var(--tinta); transform-origin: left center;
+      }
+      [data-composition-id="s2"] .tick { position: absolute; top: 690px; width: 2px; height: 24px; background: var(--contexto); }
+      [data-composition-id="s2"] .tick.major { width: 3px; height: 36px; top: 684px; background: var(--tinta); }
+      [data-composition-id="s2"] .year {
+        position: absolute; top: 736px; width: 120px; margin-left: -60px; text-align: center;
+        font-size: 26px; font-weight: 600; color: var(--tinta-suave);
+      }
+      /* The span box holds both the bracket (::before) and its label, so nothing overflows. */
+      [data-composition-id="s2"] #s2-span {
+        position: absolute; left: 220px; top: 820px; width: 1480px; height: 72px;
+        transform-origin: left center;
+      }
+      [data-composition-id="s2"] #s2-span::before {
+        content: ""; position: absolute; left: 0; right: 0; top: 0; height: 22px;
+        border: 3px solid var(--contexto); border-top: none;
+      }
+      [data-composition-id="s2"] #s2-span span {
+        position: absolute; left: 50%; top: 32px; transform: translateX(-50%);
+        font-size: 28px; font-weight: 700; color: var(--tinta-suave); white-space: nowrap;
+      }
+      [data-composition-id="s2"] #s2-arrow {
+        position: absolute; height: 4px; background: var(--acento); transform-origin: left center;
+      }
+      [data-composition-id="s2"] #s2-arrow::after {
+        content: ""; position: absolute; right: -4px; top: -10px;
+        border-left: 20px solid var(--acento); border-top: 12px solid transparent; border-bottom: 12px solid transparent;
+      }
+      [data-composition-id="s2"] .tag {
+        position: absolute; top: 470px; width: 240px; margin-left: -120px; padding: 16px 0 14px;
+        border-radius: 14px; background: var(--tinta); color: #fff; text-align: center;
+        display: flex; flex-direction: column; gap: 4px;
+      }
+      [data-composition-id="s2"] .tag b { font-size: 58px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+      [data-composition-id="s2"] .tag span { font-size: 22px; font-weight: 600; opacity: 0.85; }
+      [data-composition-id="s2"] .tag.now { background: var(--acento); }
+      [data-composition-id="s2"] #s2-inf-note {
+        position: absolute; left: 220px; top: 960px; font-size: 20px; color: var(--tinta-suave);
+      }
+    </style>
+
+    <script>
+      (() => {
+        const raiz = document.querySelector('[data-composition-id="s2"]');
+        const $ = (sel) => raiz.querySelector(sel);
+        const { rows, inflation } = window.DATOS;
+
+        // ---- The table, built from real rows of the raw file -----------------------
+        // The header as the raw file states it, and as it reads once repaired. Columns 3-5
+        // are the ones the merged name pushes out of place.
+        const WIDTHS = [380, 170, 300, 300, 514];
+        const NUM = [false, true, true, true, false];
+        const BAD = ["Name", "Price", "DiscountDLC count", "About the game", "Supported languages"];
+        const GOOD = ["Name", "Price", "Discount", "DLC count", "About the game"];
+        const SHIFTED = [2, 3, 4];
+
+        const table = $("#s2-table");
+        const head = document.createElement("div");
+        head.className = "row head";
+        BAD.forEach((name, c) => {
+          const cell = document.createElement("div");
+          cell.className = "cell" + (NUM[c] ? " num" : "");
+          cell.style.width = WIDTHS[c] + "px";
+          cell.innerHTML = `<span class="bad">${name}</span><span class="good">${GOOD[c]}</span>`;
+          head.appendChild(cell);
+        });
+        table.appendChild(head);
+
+        const bodyRows = rows.map((r) => {
+          const row = document.createElement("div");
+          row.className = "row";
+          [r.name, "$" + r.price, r.discount, r.dlc, r.about].forEach((v, c) => {
+            const cell = document.createElement("div");
+            cell.className = "cell" + (NUM[c] ? " num" : "") + (SHIFTED.includes(c) ? " shifted" : "");
+            cell.style.width = WIDTHS[c] + "px";
+            cell.textContent = v;
+            row.appendChild(cell);
+          });
+          table.appendChild(row);
+          return row;
+        });
+
+        const headCells = Array.from(head.children);
+        const badSpans = SHIFTED.map((c) => headCells[c].querySelector(".bad"));
+        const goodSpans = SHIFTED.map((c) => headCells[c].querySelector(".good"));
+        // Name and Price read the same before and after: only the shifted columns swap.
+        headCells.forEach((cell, c) => { if (!SHIFTED.includes(c)) cell.querySelector(".good").remove(); });
+        const shiftedCells = Array.from(raiz.querySelectorAll(".shifted"));
+
+        // ---- The inflation axis -------------------------------------------------------
+        const Y0 = 1997, Y1 = inflation.base_year;
+        const X0 = 220, W = 1480;
+        const x = (year) => X0 + ((year - Y0) / (Y1 - Y0)) * W;
+        const axis = $("#s2-axis");
+        const ticks = [];
+        for (let y = Y0; y <= Y1; y++) {
+          const t = document.createElement("div");
+          const major = y === Y0 || y === inflation.year || y === Y1;
+          t.className = "tick" + (major ? " major" : "");
+          t.style.left = x(y) - 1 + "px";
+          axis.appendChild(t);
+          ticks.push(t);
+          if (major) {
+            const l = document.createElement("div");
+            l.className = "year";
+            l.style.left = x(y) + "px";
+            l.textContent = y;
+            axis.appendChild(l);
+            ticks.push(l);
+          }
+        }
+        const money = (v) => "$" + v.toFixed(2);
+        $("#s2-tag-then").style.left = x(inflation.year) + "px";
+        $("#s2-tag-now").style.left = x(Y1) + "px";
+        $("#s2-then-amount").textContent = money(inflation.dollars);
+        $("#s2-then-year").textContent = `in ${inflation.year}`;
+        $("#s2-now-amount").textContent = money(inflation.dollars);
+        $("#s2-now-year").textContent = `in ${Y1} dollars`;
+        // The arrow runs between the two tags, at the vertical middle of the tags, measured
+        // from the rendered boxes so it stays centred if the text or the amount changes.
+        const arrow = $("#s2-arrow");
+        const then = $("#s2-tag-then"), now = $("#s2-tag-now");
+        const GAP = 18, HEAD = 16, STROKE = 4;
+        const start = then.offsetLeft + then.offsetWidth + GAP;   // offsetLeft already includes the -width/2 margin
+        const end = now.offsetLeft - GAP;
+        arrow.style.left = start + "px";
+        arrow.style.width = end - start - HEAD + "px";
+        arrow.style.top = then.offsetTop + then.offsetHeight / 2 - STROKE / 2 + "px";
+        $("#s2-inf-note").textContent =
+          `Adjusted with the CPI-U (US Bureau of Labor Statistics), ${Y1} as base year`;
+
+        // ---- Timeline (transcript time − 8.7) ----------------------------------------
+        const tl = gsap.timeline({ paused: true });
+
+        // Start hidden; the hand-off from scene 1 is a clean white frame.
+        tl.set([$("#s2-chip-bad"), $("#s2-chip-good"), ...goodSpans], { opacity: 0 }, 0);
+        tl.set($("#s2-inflation"), { opacity: 0 }, 0);
+
+        // "I started with 125,855 games" 0.02 → 4.18
+        tl.from($("#s2-rows"), { opacity: 0, y: 24, duration: 0.45, ease: "power2.out" }, 1.25);
+        tl.from($("#s2-rows-label"), { opacity: 0, duration: 0.4 }, 1.6);
+
+        // "and a file that lied." 4.82 → 6.3: the table lands row by row.
+        tl.from(head, { opacity: 0, y: 16, duration: 0.4, ease: "power2.out" }, 4.82);
+        tl.from(bodyRows, { opacity: 0, y: 16, duration: 0.35, ease: "power2.out", stagger: 0.12 }, 5.0);
+        tl.to(head, { borderBottomColor: "#c2410c", duration: 0.2, yoyo: true, repeat: 3 }, 5.86);
+
+        // "Its header was one column short," 6.90 → 9.2
+        tl.to(badSpans, { color: "#c2410c", duration: 0.3 }, 7.38);
+        tl.to($("#s2-chip-bad"), { opacity: 1, duration: 0.35 }, 8.1);
+        tl.from($("#s2-chip-bad"), { y: -12, duration: 0.35, ease: "back.out(2)" }, 8.1);
+
+        // "so every value after it sat in the wrong place." 9.30 → 12.6
+        tl.to(shiftedCells, {
+          color: "#c2410c", backgroundColor: "#fbeee6", duration: 0.3, stagger: 0.03,
+        }, 9.78);
+        tl.to(shiftedCells, { x: 6, duration: 0.06, yoyo: true, repeat: 7, ease: "none" }, 11.62);
+
+        // "I fixed that first." 12.98 → 14.5: the shifted names flip to the real ones.
+        tl.to(badSpans, { yPercent: -100, opacity: 0, duration: 0.4, ease: "power2.in", stagger: 0.06 }, 13.36);
+        tl.fromTo(goodSpans,
+          { yPercent: 100, opacity: 0 },
+          { yPercent: 0, opacity: 1, color: "#1f5fa8", duration: 0.45, ease: "power2.out", stagger: 0.06 }, 13.6);
+        tl.to(shiftedCells, { color: "#1a1815", backgroundColor: "rgba(255,255,255,0)", duration: 0.4 }, 13.7);
+        tl.to(head, { borderBottomColor: "#1a1815", duration: 0.3 }, 13.7);
+        tl.to($("#s2-chip-bad"), { opacity: 0, duration: 0.25 }, 13.5);
+        tl.to($("#s2-chip-good"), { opacity: 1, duration: 0.35 }, 13.7);
+
+        // "and then I adjusted 29 years of prices for inflation," 14.58 → 18.2
+        tl.to([table, $("#s2-kicker"), $("#s2-chip-good")], {
+          opacity: 0, y: -40, duration: 0.45, ease: "power2.in",
+        }, 14.6);
+        tl.to($("#s2-inflation"), { opacity: 1, duration: 0.01 }, 15.05);
+        tl.from($("#s2-inf-title"), { opacity: 0, y: 20, duration: 0.45, ease: "power2.out" }, 15.15);
+        tl.from($("#s2-axis-line"), { scaleX: 0, duration: 0.9, ease: "power2.inOut" }, 15.3);
+        tl.from(ticks, { opacity: 0, y: 8, duration: 0.2, stagger: 0.02 }, 15.4);
+        tl.from($("#s2-span"), { scaleX: 0, opacity: 0, duration: 0.6, ease: "power2.out" }, 15.86);
+        tl.from($("#s2-inf-note"), { opacity: 0, duration: 0.4 }, 16.8);
+
+        // "because ten dollars in the early 2000s isn't ten dollars today." 18.34 → 22.4
+        tl.from($("#s2-tag-then"), { opacity: 0, y: -40, duration: 0.45, ease: "back.out(2)" }, 18.6);
+        tl.from(arrow, { scaleX: 0, duration: 0.8, ease: "power2.inOut" }, 20.45);
+        tl.from($("#s2-tag-now"), { opacity: 0, y: -40, duration: 0.4, ease: "back.out(2)" }, 20.85);
+        const real = { v: inflation.dollars };
+        tl.to(real, {
+          v: inflation.real,
+          duration: 0.6,
+          ease: "power2.out",
+          onUpdate: () => { $("#s2-now-amount").textContent = money(real.v); },
+        }, 20.95);
+
+        // Hand-off to scene 3.
+        tl.to(raiz.children, { opacity: 0, duration: 0.25, ease: "power1.in" }, 22.15);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["s2"] = tl;
+      })();
+    </script>
+  </div>
+</template>

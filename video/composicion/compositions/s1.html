@@ -1,0 +1,120 @@
+<template id="s1-template">
+  <div data-composition-id="s1" data-width="1920" data-height="1080">
+    <!-- Scene 1 · The hook. Local time; on the root it starts at 0. -->
+    <div id="s1-copy">
+      <!-- Each word carries its start time from transcript.json (data-t, seconds). -->
+      <p id="s1-premise" class="line">
+        <span class="w" data-t="0.16">An </span><span class="w" data-t="0.32">investment </span><span class="w" data-t="0.80">fund </span><span class="w" data-t="1.20">wants </span><span class="w" data-t="1.44">to </span><span class="w" data-t="1.76">back </span><span class="w" data-t="2.16">a </span><span class="w" data-t="2.32">video </span><span class="w" data-t="2.64">game </span><span class="w" data-t="2.96">studio.</span>
+      </p>
+      <p id="s1-steam" class="line">Steam has over a hundred thousand games.</p>
+      <div id="s1-count">0</div>
+      <div id="s1-count-label">games in the catalogue</div>
+    </div>
+
+    <p id="s1-question">
+      <span class="w" data-t="6.40">So </span><span class="w hi" data-t="6.64">where </span><span class="w" data-t="7.04">do </span><span class="w" data-t="7.20">you </span><span class="w" data-t="7.36">even </span><span class="w" data-t="7.52">start </span><span class="w" data-t="7.84">looking?</span>
+    </p>
+
+    <div id="s1-grid"></div>
+    <div id="s1-grid-note">Each dot ≈ 79 games · Steam catalogue, 1997–2026</div>
+
+    <style>
+      [data-composition-id="s1"] #s1-copy { position: absolute; left: 128px; top: 168px; width: 760px; }
+      [data-composition-id="s1"] .line { display: block; }
+      [data-composition-id="s1"] .w { display: inline-block; white-space: pre; }
+      [data-composition-id="s1"] #s1-premise {
+        font-size: 54px; font-weight: 700; line-height: 1.16; letter-spacing: -0.02em;
+      }
+      [data-composition-id="s1"] #s1-steam {
+        margin-top: 44px; font-size: 30px; font-weight: 400; line-height: 1.35; color: var(--tinta-suave);
+      }
+      [data-composition-id="s1"] #s1-count {
+        margin-top: 12px; font-size: 120px; font-weight: 700; letter-spacing: -0.035em;
+        font-variant-numeric: tabular-nums; color: var(--acento);
+      }
+      [data-composition-id="s1"] #s1-count-label { font-size: 26px; font-weight: 600; color: var(--tinta-suave); }
+      [data-composition-id="s1"] #s1-question {
+        position: absolute; left: 128px; top: 760px; width: 760px;
+        font-size: 54px; font-weight: 700; line-height: 1.16; letter-spacing: -0.02em;
+      }
+      [data-composition-id="s1"] #s1-question .hi { color: var(--acento); }
+      [data-composition-id="s1"] #s1-grid {
+        position: absolute; left: 1000px; top: 168px; width: 792px; height: 779px;
+        display: grid; grid-template-columns: repeat(40, 1fr); gap: 6px;
+      }
+      [data-composition-id="s1"] .dot { width: 13.6px; height: 13.6px; border-radius: 50%; background: var(--acento); }
+      [data-composition-id="s1"] #s1-grid-note {
+        position: absolute; left: 1000px; top: 972px; font-size: 20px; color: var(--tinta-suave);
+      }
+    </style>
+
+    <script>
+      (() => {
+        const raiz = document.querySelector('[data-composition-id="s1"]');
+        const $ = (sel) => raiz.querySelector(sel);
+
+        // 40 × 40 = 1,600 dots for 125,855 games: one dot ≈ 79 games.
+        const TOTAL = 125855;
+        const N = 40 * 40;
+        const grid = $("#s1-grid");
+        for (let i = 0; i < N; i++) {
+          const d = document.createElement("div");
+          d.className = "dot";
+          grid.appendChild(d);
+        }
+        const dots = Array.from(grid.children);
+
+        // Integer hash (lowbias32): a deterministic scatter, so the grid fills like noise,
+        // not in stripes. No Math.random: renders must repeat frame for frame.
+        const rank = (i) => {
+          let x = (i + 1) >>> 0;
+          x ^= x >>> 16; x = Math.imul(x, 0x7feb352d) >>> 0;
+          x ^= x >>> 15; x = Math.imul(x, 0x846ca68b) >>> 0;
+          x ^= x >>> 16;
+          return x >>> 0;
+        };
+
+        // The handful of dots that light up when the question lands: the needle in the haystack.
+        const needles = [137, 418, 702, 1013, 1290];
+
+        const tl = gsap.timeline({ paused: true });
+
+        // Premise and question, word by word, synced to the voice.
+        raiz.querySelectorAll(".w").forEach((w) => {
+          tl.from(w, { opacity: 0, y: 18, duration: 0.35, ease: "power2.out" }, Number(w.dataset.t));
+        });
+
+        // "Steam has over a hundred thousand games." 3.84 → 6.40
+        tl.from($("#s1-steam"), { opacity: 0, y: 14, duration: 0.4, ease: "power2.out" }, 3.84);
+        tl.from([$("#s1-count"), $("#s1-count-label")], { opacity: 0, duration: 0.3 }, 3.84);
+        const counter = { v: 0 };
+        tl.to(counter, {
+          v: TOTAL,
+          duration: 2.2,
+          ease: "power1.inOut",
+          onUpdate: () => { $("#s1-count").textContent = Math.round(counter.v).toLocaleString("en-US"); },
+        }, 3.95);
+
+        // The grid floods in while the counter runs: the screen gets crowded on purpose.
+        const order = dots.map((d, i) => [rank(i), i, d]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map((x) => x[2]);
+        tl.from(order, { scale: 0, opacity: 0, duration: 0.25, ease: "back.out(2)", stagger: { amount: 2.1 } }, 3.95);
+        tl.from($("#s1-grid-note"), { opacity: 0, duration: 0.4 }, 5.6);
+
+        // "So where do you even start looking?" The premise steps back, the crowd turns grey…
+        tl.to([$("#s1-premise"), $("#s1-steam")], { opacity: 0.35, duration: 0.5 }, 6.3);
+        tl.to(dots, { backgroundColor: "#d9d7cf", duration: 0.6, ease: "power1.out" }, 6.4);
+
+        // …and on "looking?" a few dots light up in the counterpoint colour.
+        needles.forEach((idx, k) => {
+          tl.to(dots[idx], { backgroundColor: "#c2410c", scale: 1.9, duration: 0.3, ease: "back.out(3)" }, 7.84 + k * 0.08);
+        });
+
+        // Hand-off to scene 2: everything clears.
+        tl.to(raiz.children, { opacity: 0, duration: 0.3, ease: "power1.in" }, 8.4);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["s1"] = tl;
+      })();
+    </script>
+  </div>
+</template>

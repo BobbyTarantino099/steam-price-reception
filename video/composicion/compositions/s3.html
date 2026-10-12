@@ -1,0 +1,204 @@
+<template id="s3-template">
+  <div data-composition-id="s3" data-width="1920" data-height="1080">
+    <!--
+      Scene 3 · The finding. Local time; on the root it starts at 31.1 s, so every time here is
+      the transcript time minus 31.1. The chart is figure 01 of the case (cheapest band vs. the
+      genre's best band), rebuilt from salidas/tablas/genero_x_franja_precio.csv through
+      assets/datos.js. The "+x.x" gap labels of the figure are left out on purpose: the figure
+      computes them from unrounded medians and the table rounds to two decimals, so one of them
+      (Sports) would read 0.1 off.
+    -->
+    <div id="s3-bands">
+      <p id="s3-bands-title">Four price bands, in real 2026 dollars</p>
+      <div id="s3-strip"></div>
+    </div>
+
+    <div id="s3-chart">
+      <p id="s3-title">Median share of positive reviews, by genre</p>
+      <div id="s3-legend">
+        <span><i class="dot q1"></i>Cheapest band (Q1)</span>
+        <span><i class="dot best"></i>Genre's best band</span>
+      </div>
+      <div id="s3-counter"><b id="s3-count">0</b><span>/10 genres</span></div>
+      <div id="s3-plot"></div>
+    </div>
+
+    <style>
+      [data-composition-id="s3"] #s3-bands { position: absolute; inset: 0; }
+      [data-composition-id="s3"] #s3-bands-title {
+        position: absolute; left: 228px; top: 300px;
+        font-size: 54px; font-weight: 700; letter-spacing: -0.02em;
+      }
+      [data-composition-id="s3"] #s3-strip {
+        position: absolute; left: 228px; top: 420px; width: 1464px; height: 220px;
+        display: flex; gap: 8px;
+      }
+      [data-composition-id="s3"] .band {
+        flex: 1; border-radius: 16px; padding: 28px 30px;
+        display: flex; flex-direction: column; justify-content: space-between;
+      }
+      [data-composition-id="s3"] .band b { font-size: 64px; letter-spacing: -0.03em; line-height: 1; }
+      [data-composition-id="s3"] .band span { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+      [data-composition-id="s3"] #s3-chart { position: absolute; inset: 0; }
+      [data-composition-id="s3"] #s3-title {
+        position: absolute; left: 128px; top: 96px;
+        font-size: 44px; font-weight: 700; letter-spacing: -0.02em;
+      }
+      [data-composition-id="s3"] #s3-legend {
+        position: absolute; left: 128px; top: 168px; display: flex; gap: 40px;
+        font-size: 24px; font-weight: 600; color: var(--tinta-suave);
+      }
+      [data-composition-id="s3"] #s3-legend span { display: flex; align-items: center; gap: 12px; }
+      [data-composition-id="s3"] .dot { display: inline-block; width: 22px; height: 22px; border-radius: 50%; }
+      [data-composition-id="s3"] .dot.q1 { background: var(--contexto); }
+      [data-composition-id="s3"] .dot.best { background: var(--acento); }
+
+      [data-composition-id="s3"] #s3-counter {
+        position: absolute; right: 128px; top: 84px; color: var(--acento);
+        display: flex; align-items: baseline; gap: 6px; transform-origin: right center;
+      }
+      [data-composition-id="s3"] #s3-counter b {
+        font-size: 96px; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums;
+      }
+      [data-composition-id="s3"] #s3-counter span { font-size: 30px; font-weight: 700; }
+
+      [data-composition-id="s3"] #s3-plot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      [data-composition-id="s3"] .grid { position: absolute; top: 250px; height: 700px; width: 2px; background: var(--regla); }
+      [data-composition-id="s3"] .tick {
+        position: absolute; top: 962px; width: 80px; margin-left: -40px; text-align: center;
+        font-size: 22px; color: var(--tinta-suave); font-variant-numeric: tabular-nums;
+      }
+      [data-composition-id="s3"] .axis-label {
+        position: absolute; top: 1000px; font-size: 22px; color: var(--tinta-suave);
+      }
+      [data-composition-id="s3"] .genre {
+        position: absolute; left: 128px; width: 392px; height: 40px; margin-top: -20px;
+        text-align: right; font-size: 28px; color: var(--tinta); line-height: 40px;
+      }
+      [data-composition-id="s3"] .bar {
+        position: absolute; height: 8px; margin-top: -4px; border-radius: 4px;
+        background: var(--acento); transform-origin: left center;
+      }
+      [data-composition-id="s3"] .pt {
+        position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%;
+        border: 3px solid var(--papel);
+      }
+      [data-composition-id="s3"] .pt.q1 { background: var(--contexto); }
+      [data-composition-id="s3"] .pt.best { width: 32px; height: 32px; margin: -16px 0 0 -16px; background: var(--acento); }
+      [data-composition-id="s3"] .check {
+        position: absolute; left: 1700px; width: 40px; height: 40px; margin-top: -20px; border-radius: 50%;
+        background: var(--acento); color: #fff; font-size: 26px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+      }
+    </style>
+
+    <script>
+      (() => {
+        const raiz = document.querySelector('[data-composition-id="s3"]');
+        const $ = (sel) => raiz.querySelector(sel);
+        const { bands, genres } = window.DATOS;
+        const el = (cls, parent, text) => {
+          const d = document.createElement("div");
+          d.className = cls;
+          if (text !== undefined) d.textContent = text;
+          parent.appendChild(d);
+          return d;
+        };
+
+        // ---- The four bands, labelled from the analysis table itself ---------------------
+        // Q1 in the figure's grey; Q2-Q4 climb the case's blue ramp (notebooks/estilo.py).
+        const FILL = { Q1: ["#8a877c", "#fff"], Q2: ["#c7dcf0", "#1a1815"], Q3: ["#8fbce2", "#1a1815"], Q4: ["#4a8bc9", "#fff"] };
+        const rango = (q, t) => {
+          const [lo, hi] = t.replace("]", "").split("-");
+          if (t.startsWith("<=")) return "up to $" + t.slice(2).trim();
+          if (t.startsWith(">")) return "over $" + t.slice(1).trim();
+          return `$${lo}–${hi}`;
+        };
+        const strip = $("#s3-strip");
+        const bandEls = Object.entries(bands).map(([q, t]) => {
+          const b = el("band", strip);
+          b.style.background = FILL[q][0];
+          b.style.color = FILL[q][1];
+          b.innerHTML = `<b>${q}</b><span>${rango(q, t)}</span>`;
+          return b;
+        });
+
+        // ---- Figure 01 as a dumbbell -------------------------------------------------------
+        const V0 = 74, V1 = 92, X0 = 560, X1 = 1600;
+        const x = (v) => X0 + ((v - V0) / (V1 - V0)) * (X1 - X0);
+        const y = (i) => 285 + i * 70;
+        const plot = $("#s3-plot");
+        const grids = [];
+        for (let v = 75; v <= 90; v += 5) {
+          const g = el("grid", plot); g.style.left = x(v) - 1 + "px";
+          const t = el("tick", plot, v + "%"); t.style.left = x(v) + "px";
+          grids.push(g, t);
+        }
+        const axisLabel = el("axis-label", plot, "Paid games with ≥500 reviews · price adjusted for inflation");
+        axisLabel.style.left = X0 + "px";
+        grids.push(axisLabel);
+
+        const rows = genres.map((g, i) => {
+          const label = el("genre", plot, g.genre); label.style.top = y(i) + "px";
+          const bar = el("bar", plot);
+          bar.style.left = x(g.q1) + "px"; bar.style.top = y(i) + "px";
+          bar.style.width = x(g.best) - x(g.q1) + "px";
+          const q1 = el("pt q1", plot); q1.style.left = x(g.q1) + "px"; q1.style.top = y(i) + "px";
+          const best = el("pt best", plot); best.style.left = x(g.best) + "px"; best.style.top = y(i) + "px";
+          const check = el("check", plot, "✓"); check.style.top = y(i) + "px";
+          return { label, bar, q1, best, check };
+        });
+
+        // ---- Timeline (transcript time − 31.1) ----------------------------------------------
+        const tl = gsap.timeline({ paused: true });
+        tl.set($("#s3-chart"), { opacity: 0 }, 0);
+
+        // "I split the catalogue into four price bands." 0.10 → 2.6
+        tl.from($("#s3-bands-title"), { opacity: 0, y: 20, duration: 0.45, ease: "power2.out" }, 0.2);
+        tl.from(bandEls, { opacity: 0, y: 30, scale: 0.94, duration: 0.4, ease: "back.out(1.6)", stagger: 0.14 }, 1.45);
+        tl.to($("#s3-bands"), { opacity: 0, y: -40, duration: 0.35, ease: "power2.in" }, 2.55);
+
+        // "In all ten genres," 2.78 → 4.4: the chart and its ten rows, cheapest band first.
+        tl.to($("#s3-chart"), { opacity: 1, duration: 0.01 }, 2.9);
+        tl.from([$("#s3-title"), $("#s3-legend"), $("#s3-counter")], { opacity: 0, y: 16, duration: 0.4, stagger: 0.08 }, 2.9);
+        tl.from(grids, { opacity: 0, duration: 0.4 }, 3.0);
+        rows.forEach((r, i) => {
+          tl.from([r.label, r.q1], { opacity: 0, x: -16, duration: 0.3, ease: "power2.out" }, 3.0 + i * 0.09);
+        });
+        rows.forEach((r) => tl.set([r.bar, r.best, r.check], { opacity: 0 }, 0));
+
+        // "and the cheapest band" 4.54 → 5.8: the grey dots pulse.
+        tl.to(rows.map((r) => r.q1), { scale: 1.5, duration: 0.25, yoyo: true, repeat: 1, ease: "power1.inOut", stagger: 0.03 }, 4.9);
+
+        // "was never the best." 5.90 → 7.2, carried through "Not most of them." (7.30 → 8.7):
+        // genre by genre, the best band pulls away to the right and the row is ticked.
+        const count = { v: 0 };
+        rows.forEach((r, i) => {
+          const t = 6.0 + i * 0.22;
+          tl.set(r.bar, { opacity: 1 }, t);
+          tl.from(r.bar, { scaleX: 0, duration: 0.35, ease: "power2.out" }, t);
+          tl.set(r.best, { opacity: 1 }, t + 0.25);
+          tl.from(r.best, { scale: 0, duration: 0.3, ease: "back.out(2.4)" }, t + 0.25);
+          tl.set(r.check, { opacity: 1 }, t + 0.35);
+          tl.from(r.check, { scale: 0, duration: 0.25, ease: "back.out(2.4)" }, t + 0.35);
+          tl.to(count, {
+            v: i + 1, duration: 0.01,
+            onUpdate: () => { $("#s3-count").textContent = Math.round(count.v); },
+          }, t + 0.35);
+        });
+
+        // "All ten." 9.14 → 10.2: the whole column answers at once.
+        tl.to($("#s3-counter"), { scale: 1.18, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out" }, 9.62);
+        tl.to(rows.map((r) => r.best), { scale: 1.35, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out" }, 9.62);
+        tl.to(rows.map((r) => r.check), { scale: 1.25, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out" }, 9.62);
+
+        // Hand-off to scene 4, whose re-recorded take starts speaking at 41.52 s (local 10.42).
+        tl.to(raiz.children, { opacity: 0, duration: 0.25, ease: "power1.in" }, 10.05);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["s3"] = tl;
+      })();
+    </script>
+  </div>
+</template>

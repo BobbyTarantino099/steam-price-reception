@@ -1,0 +1,189 @@
+<template id="s4-template">
+  <div data-composition-id="s4" data-width="1920" data-height="1080">
+    <!--
+      Scene 4 · The objection. Local time; on the root it starts at 41.4 s, so every time here is
+      the transcript time minus 41.4. The data is figure 04's age control extended to all ten
+      genres (assets/datos.js, "age"): games split at the median age, and per genre the median
+      positive-review share of each price band. Each row is a small dot strip: the grey dot is the
+      cheapest band, the blue ones are the other three. Where the grey dot is the leftmost, the
+      cheapest band comes last, and the row is shaded.
+    -->
+    <div id="s4-quote">
+      <p id="s4-kicker">The obvious objection</p>
+      <p id="s4-words">
+        <span class="w" data-t="1.88">“Cheap </span><span class="w" data-t="2.36">games </span><span class="w" data-t="2.84">are </span><span class="w" data-t="3.00">just </span><span class="w hi" data-t="3.32">old </span><span class="w" data-t="3.64">games.”</span>
+      </p>
+    </div>
+
+    <div id="s4-check">
+      <p id="s4-sub"></p>
+      <div id="s4-head-older" class="head">Older games</div>
+      <div id="s4-head-recent" class="head">Recent games</div>
+      <div id="s4-legend">
+        <span><i class="dot q1"></i>Cheapest band</span>
+        <span><i class="dot other"></i>The other three</span>
+        <span><i class="swatch"></i>Cheapest band comes last</span>
+      </div>
+      <div id="s4-rows"></div>
+    </div>
+
+    <style>
+      [data-composition-id="s4"] .w { display: inline-block; white-space: pre; }
+      [data-composition-id="s4"] #s4-quote { position: absolute; left: 128px; top: 330px; width: 1600px; transform-origin: left top; }
+      [data-composition-id="s4"] #s4-kicker {
+        font-size: 30px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--tinta-suave);
+      }
+      [data-composition-id="s4"] #s4-words {
+        margin-top: 24px; font-size: 96px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05;
+        white-space: nowrap;   /* one line, so it still fits above the subtitle once scaled to a title */
+      }
+      [data-composition-id="s4"] #s4-words .hi { color: var(--acento); }
+
+      [data-composition-id="s4"] #s4-check { position: absolute; inset: 0; }
+      [data-composition-id="s4"] #s4-sub { position: absolute; left: 128px; top: 200px; font-size: 26px; color: var(--tinta-suave); }
+      [data-composition-id="s4"] .head {
+        position: absolute; top: 262px; font-size: 32px; font-weight: 700;
+      }
+      [data-composition-id="s4"] #s4-head-older { left: 500px; }
+      [data-composition-id="s4"] #s4-head-recent { left: 1150px; }
+      [data-composition-id="s4"] #s4-legend {
+        position: absolute; left: 500px; top: 982px; display: flex; gap: 40px;
+        font-size: 22px; font-weight: 600; color: var(--tinta-suave);
+      }
+      [data-composition-id="s4"] #s4-legend span { display: flex; align-items: center; gap: 10px; }
+      [data-composition-id="s4"] .dot { display: inline-block; border-radius: 50%; }
+      [data-composition-id="s4"] .dot.q1 { width: 22px; height: 22px; background: var(--contexto); }
+      [data-composition-id="s4"] .dot.other { width: 16px; height: 16px; background: var(--acento); }
+      [data-composition-id="s4"] .swatch { display: inline-block; width: 36px; height: 22px; border-radius: 6px; background: #eaf1f9; }
+
+      [data-composition-id="s4"] #s4-rows { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+      [data-composition-id="s4"] .genre {
+        position: absolute; left: 128px; width: 330px; height: 56px; margin-top: -28px;
+        text-align: right; font-size: 27px; line-height: 56px;
+      }
+      [data-composition-id="s4"] .shade {
+        position: absolute; width: 560px; height: 56px; margin-top: -28px; border-radius: 10px;
+        background: #eaf1f9; transform-origin: left center;
+      }
+      [data-composition-id="s4"] .rail { position: absolute; width: 520px; height: 2px; margin-top: -1px; background: var(--regla); }
+      [data-composition-id="s4"] .pt { position: absolute; border-radius: 50%; }
+      [data-composition-id="s4"] .pt.q1 { width: 26px; height: 26px; margin: -13px 0 0 -13px; background: var(--contexto); z-index: 2; }
+      [data-composition-id="s4"] .pt.other { width: 16px; height: 16px; margin: -8px 0 0 -8px; background: var(--acento); }
+      [data-composition-id="s4"] .na {
+        position: absolute; width: 520px; height: 56px; margin-top: -28px; line-height: 56px;
+        font-size: 22px; font-style: italic; color: var(--tinta-suave);
+      }
+    </style>
+
+    <script>
+      (() => {
+        const raiz = document.querySelector('[data-composition-id="s4"]');
+        const $ = (sel) => raiz.querySelector(sel);
+        const { age } = window.DATOS;
+        const el = (cls, parent, text) => {
+          const d = document.createElement("div");
+          d.className = cls;
+          if (text !== undefined) d.textContent = text;
+          parent.appendChild(d);
+          return d;
+        };
+
+        $("#s4-sub").textContent =
+          `Games split at the median age (${age.cut_years} years) · median share of positive reviews by price band`;
+        $("#s4-head-older").textContent = `Older games (over ${age.cut_years} years)`;
+        $("#s4-head-recent").textContent = `Recent games (${age.cut_years} years or less)`;
+
+        // One strip per genre and age group, on a shared 78-92 % scale.
+        const V0 = 78, V1 = 92, W = 520;
+        const PANEL = { older: 520, recent: 1170 };
+        const y = (i) => 350 + i * 62;
+        const x = (panel, v) => PANEL[panel] + ((v - V0) / (V1 - V0)) * W;
+        const host = $("#s4-rows");
+
+        const rows = age.genres.map((g, i) => {
+          const r = { genre: g.genre, label: el("genre", host, g.genre) };
+          r.label.style.top = y(i) + "px";
+          for (const panel of ["older", "recent"]) {
+            const d = g[panel];
+            const p = { data: d, dots: [] };
+            if (!d) {
+              p.na = el("na", host, "not enough games in some bands");
+              p.na.style.left = PANEL[panel] + "px"; p.na.style.top = y(i) + "px";
+            } else {
+              if (d.q1_last) {
+                p.shade = el("shade", host);
+                p.shade.style.left = PANEL[panel] - 20 + "px"; p.shade.style.top = y(i) + "px";
+              }
+              p.rail = el("rail", host);
+              p.rail.style.left = PANEL[panel] + "px"; p.rail.style.top = y(i) + "px";
+              for (const [q, v] of Object.entries(d.bands)) {
+                const dot = el("pt " + (q === "Q1" ? "q1" : "other"), host);
+                dot.style.left = x(panel, v) + "px"; dot.style.top = y(i) + "px";
+                if (q === "Q1") p.q1 = dot; else p.dots.push(dot);
+              }
+            }
+            r[panel] = p;
+          }
+          return r;
+        });
+
+        const all = (panel, key) => rows.map((r) => r[panel][key]).filter(Boolean);
+        const others = (panel) => rows.flatMap((r) => r[panel].dots);
+        const lastRows = (panel, yes) => rows.filter((r) => r[panel].data && r[panel].data.q1_last === yes);
+
+        // ---- Timeline (transcript time − 41.4) ------------------------------------------
+        const tl = gsap.timeline({ paused: true });
+        tl.set($("#s4-check"), { opacity: 0 }, 0);
+        tl.set([...all("older", "shade"), ...all("recent", "shade")], { scaleX: 0, opacity: 0 }, 0);
+
+        // "The obvious objection: cheap games are just old games." 0.12 → 4.2
+        tl.from($("#s4-kicker"), { opacity: 0, y: 14, duration: 0.4, ease: "power2.out" }, 0.12);
+        raiz.querySelectorAll("#s4-words .w").forEach((w) => {
+          tl.from(w, { opacity: 0, y: 24, duration: 0.35, ease: "power2.out" }, Number(w.dataset.t));
+        });
+
+        // "So I checked." 4.36 → 6.2: the quote steps up into a title, the check is laid out.
+        tl.to($("#s4-quote"), { y: 96 - 330, scale: 0.5, duration: 0.6, ease: "power3.inOut" }, 4.4);  // top 330 → 96
+        tl.to($("#s4-kicker"), { opacity: 0, duration: 0.3 }, 4.4);
+        tl.to($("#s4-check"), { opacity: 1, duration: 0.01 }, 4.8);
+        tl.from([$("#s4-sub"), $("#s4-head-older"), $("#s4-head-recent"), $("#s4-legend")],
+          { opacity: 0, y: 12, duration: 0.4, stagger: 0.1 }, 4.85);
+        tl.from(rows.map((r) => r.label), { opacity: 0, x: -14, duration: 0.3, stagger: 0.05 }, 5.2);
+        tl.set([$("#s4-head-recent"), ...all("recent", "rail"), ...all("recent", "q1"), ...others("recent"), ...all("recent", "na")],
+          { opacity: 0 }, 0);
+
+        // "And among older games, the cheapest band" 6.44 → 9.6
+        tl.from(all("older", "rail"), { scaleX: 0, transformOrigin: "left center", duration: 0.4, stagger: 0.05 }, 6.5);
+        tl.from([...all("older", "q1"), ...others("older")], { scale: 0, duration: 0.3, ease: "back.out(2)", stagger: 0.012 }, 6.8);
+        tl.from(all("older", "na"), { opacity: 0, duration: 0.3 }, 7.2);
+        tl.to(all("older", "q1"), { scale: 1.45, duration: 0.22, yoyo: true, repeat: 1, ease: "power1.inOut", stagger: 0.03 }, 8.6);
+
+        // "still comes last almost everywhere." 9.64 → 12.0: the older rows shade, one by one.
+        tl.to(all("older", "shade"), { scaleX: 1, opacity: 1, duration: 0.35, ease: "power2.out", stagger: 0.06 }, 10.1);
+
+        // "Among recent ones, the gap mostly closes" 12.28 → 15.4
+        tl.to($("#s4-head-recent"), { opacity: 1, duration: 0.3 }, 12.28);
+        tl.to(all("recent", "rail"), { opacity: 1, duration: 0.01 }, 12.4);
+        tl.from(all("recent", "rail"), { scaleX: 0, transformOrigin: "left center", duration: 0.4, stagger: 0.05 }, 12.4);
+        tl.to([...all("recent", "q1"), ...others("recent")], { opacity: 1, duration: 0.01 }, 12.7);
+        tl.from([...all("recent", "q1"), ...others("recent")], { scale: 0, duration: 0.3, ease: "back.out(2)", stagger: 0.012 }, 12.7);
+        tl.to(all("recent", "na"), { opacity: 1, duration: 0.3 }, 13.1);
+        // On "closes" the rows where the cheapest band no longer comes last fade back.
+        const closed = lastRows("recent", false);
+        tl.to(closed.flatMap((r) => [r.recent.rail, r.recent.q1, ...r.recent.dots]), { opacity: 0.3, duration: 0.5 }, 14.6);
+
+        // "— except in three genres." 15.53 → 17.0: the three that hold up are shaded and pulse.
+        const held = lastRows("recent", true);
+        tl.to(held.map((r) => r.recent.shade), { scaleX: 1, opacity: 1, duration: 0.35, ease: "power2.out", stagger: 0.08 }, 15.6);
+        tl.to(held.map((r) => r.recent.q1), { scale: 1.5, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out", stagger: 0.08 }, 16.15);
+
+        // Hand-off to scene 5.
+        tl.to(raiz.children, { opacity: 0, duration: 0.25, ease: "power1.in" }, 16.85);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["s4"] = tl;
+      })();
+    </script>
+  </div>
+</template>
