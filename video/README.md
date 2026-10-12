@@ -22,6 +22,8 @@ video/
 ├── limpiar_voz.py        # 2. denoises the voice and sets its loudness
 ├── datos_video.py        # 3. pulls every number on screen from the case's files
 ├── mezclar_audio.py      # 4. lays the music bed under the voice
+├── portada.py            # 5. takes the poster frame from the render
+├── portada.jpg           # the poster the case page shows until play is pressed
 └── composicion/          # the HyperFrames project
     ├── index.html        # mounts the five scenes on one timeline, plays the mix
     ├── compositions/     # s1.html … s5.html, one per scene, each with its own clock
@@ -62,7 +64,13 @@ cd video/composicion
 npx hyperframes transcribe voz_limpia.wav --engine parakeet --language en   # word timings
 npm run check                    # lint, layout, motion and contrast: must pass
 npm run render                   # -> renders/
+
+cd ../..
+python video/portada.py          # render -> video/portada.jpg (the site's poster)
 ```
+
+The site copies `portada.jpg` with `scripts/cases/sync_figures.py`, next to the figures. It is
+versioned because it comes from the render, which is not.
 
 `datos_video.py` needs the raw CSV in `datos/crudos/` (see the main README) and `datos/limpios/`,
 which `notebooks/procesar.py` regenerates. It stops with an assert if the analysis base it
