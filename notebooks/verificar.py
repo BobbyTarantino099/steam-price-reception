@@ -84,6 +84,23 @@ for genero in ['Action', 'Adventure', 'Indie', 'Casual']:
     print(f'\n--- {genero} ---')
     print(tabla_controlada[tabla_controlada['Genres'] == genero].to_string(index=False))
 
+# Al principio esta verificacion miraba solo estos cuatro generos y se leyo como
+# "el patron se mantiene en ambos grupos". Extendida a los diez, no es asi: en los
+# recientes Q1 queda ultima solo en tres. El resumen de abajo es lo que cita el caso
+# (correccion del 2026-10-11, ver la bitacora de CASO.md).
+print('\n--- Los diez generos: Q1 queda ultima? (solo generos con las 4 franjas, n >= 20) ---')
+for banda in ['Viejo (> mediana)', 'Reciente (<= mediana)']:
+    ultima = []
+    con_datos = 0
+    for genero, sub in tabla_controlada[tabla_controlada['banda_antiguedad'] == banda].groupby('Genres'):
+        if len(sub) < 4:
+            continue
+        con_datos += 1
+        m = sub.set_index('franja_precio')['mediana_pct']
+        if m.iloc[0] == m.min():
+            ultima.append(genero)
+    print(f'{banda}: Q1 ultima en {len(ultima)} de {con_datos} -> {", ".join(ultima)}')
+
 # ---------------------------------------------------------------
 # V5 - Efecto de tamano: diferencia Q1 vs mejor franja por genero
 # ---------------------------------------------------------------

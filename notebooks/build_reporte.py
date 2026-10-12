@@ -26,9 +26,10 @@ doc = reporte.Reporte(
 # --- Portada ---------------------------------------------------------------
 doc.portada(
     eyebrow='Technical report · Portfolio case study',
-    hallazgo='In all ten genres, the cheapest price band has the worst reception — and the best '
-             'sits at mid-to-high prices, not at the top. The effect is real but moderate, which '
-             'is why it supports a screening rule and not a pricing thesis.',
+    hallazgo='In all ten genres, the cheapest price band is never the best-received, and in nine '
+             'it is the worst. Among recent games the pattern holds only in three genres. The '
+             'effect is real but moderate, which is why it supports a screening rule and not a '
+             'pricing thesis.',
     meta=[
         ('Domain', 'Video games'),
         ('Tools', 'Python · pandas · matplotlib'),
@@ -131,7 +132,7 @@ doc.cerrar()
 
 # --- El momento crítico ----------------------------------------------------
 doc.seccion('The moment the case nearly went the other way', salto=True)
-doc.critico('A broken header, and the rival explanation that had to be ruled out', [
+doc.critico('A broken header, and the rival explanation that had to be tested', [
     'The raw file\'s header declares 39 columns while every row carries 40: the name '
     '<code>DiscountDLC count</code> merges two separate fields. Read naively, every column after '
     'that point is shifted by one — and the file still loads without error.',
@@ -139,11 +140,12 @@ doc.critico('A broken header, and the rival explanation that had to be ruled out
     'better reviewed, so the entire finding could have been an <strong>age effect</strong> wearing '
     'a price label. It was tested before publication, not after: splitting recent from older games '
     'and re-running the pattern within each group.',
-    'The pattern holds in both. That is the check that turns "cheap games are worse reviewed" from '
-    'a correlation into something worth acting on.',
+    'The objection is partly right. Among older games the cheapest band comes last in all 9 genres '
+    'with enough data; among recent ones only in Adventure, Indie and Casual. That narrows the '
+    'finding for recent games, and it is why those three genres carry the recommendation.',
 ])
 doc.figura(G / '04_control_antiguedad.png',
-           'The same pattern within recent and older games: the cheapest band trails in both.')
+           'Among older games the cheapest band trails in every genre; among recent ones, in three.')
 doc.cerrar()
 
 # --- Hallazgos -------------------------------------------------------------
@@ -156,8 +158,8 @@ doc.html_libre('<h3>1 · The peak sits at mid-to-high prices, never the cheapest
 doc.figura(G / '02_heatmap_genero_franja.png',
            'Median positive-review share by genre and price band.')
 doc.html_libre(
-    '<p>Five genres peak at <strong>Q3 ($6.46–$12.36)</strong> and four at Q4. <strong>No genre '
-    'has its best reception in Q1 or Q2</strong> — which also rules out the simplistic "more '
+    '<p>Five genres peak at <strong>Q3 ($6.46–$12.36)</strong> and four at Q4. Massively Multiplayer peaks at Q2. <strong>No genre '
+    'has its best reception in Q1</strong> — which also rules out the simplistic "more '
     'expensive is always better" reading: in half the genres the most expensive band already '
     'trails Q3.</p>'
     '<h3>2 · The effect is real but moderate: 2.50 to 5.04 percentage points</h3>'
@@ -183,7 +185,7 @@ doc.tabla(
         ['V1 · Sanity', 'That the inflation adjustment distorted the bands — compared against raw list price'],
         ['V2 · Recomputation', 'An aggregation error, by rebuilding the genre × band table a second way'],
         ['V3 · Confounder', 'That age drives reception, by measuring the correlation directly'],
-        ['V4 · Age control', 'That the pattern is an age effect — it holds in recent and older games alike'],
+        ['V4 · Age control', 'That the pattern is only an age effect — it holds among older games in every genre, among recent ones in three'],
         ['V5 · Effect size', 'A difference too small to act on: 2.50 to 5.04 p.p.'],
         ['V6 · Source semantics', 'A misread metric, by recomputing the positive share by hand for random games'],
         ['V7 · Sample robustness', 'Genres too thin to carry a conclusion'],

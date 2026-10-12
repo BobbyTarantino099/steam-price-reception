@@ -89,12 +89,12 @@ para('We analysed 117,430 games published on Steam. To isolate a reliable signal
 # Main finding ---------------------------------------------------------------
 heading('Main finding', level=2)
 p = doc.add_paragraph()
-r = p.add_run('The cheapest price band gets, across all 10 genres without exception, the worst '
-              'reception.'); r.bold = True
-p.add_run(" The best reception isn't at the highest possible price, but in a mid-to-high range "
-          '(approximately $6-$12 adjusted, depending on genre).')
+r = p.add_run('The cheapest price band is never the best-received, in any of the 10 genres, and '
+              'in 9 of them it is the worst.'); r.bold = True
+p.add_run(" The best reception isn't always at the highest price either: depending on the genre, "
+          'it sits in the mid-to-high range ($6.46-$12.36 adjusted) or above it.')
 image('01_q1_vs_mejor_franja.png',
-      caption='The cheapest band has the worst reception across all 10 Steam genres')
+      caption='The cheapest band is never the best-received in any Steam genre')
 para('The difference is real but moderate: between 2.5 and 5 percentage points of improvement '
      "moving from the cheapest band to each genre's best band. Not a dramatic effect, but a "
      'consistent one across all 10 categories.')
@@ -122,11 +122,12 @@ para("Massively Multiplayer is left off this list: it's the genre with the worst
 
 # Age control ---------------------------------------------------------------
 heading('Is this just an effect of cheap games being older?', level=2)
-para('No. We repeated the analysis splitting recent games from older ones, and the pattern holds '
-     'the same in both groups: the cheapest band remains the worst-reception one, regardless of '
-     "the game's age.")
+para('In part. We repeated the analysis splitting recent games from older ones. Among older '
+     'games, the cheapest band comes last in every genre with enough data. Among recent games it '
+     'comes last only in Adventure, Indie and Casual — the same three genres we recommend — and '
+     'in the rest the gap mostly closes.')
 image('04_control_antiguedad.png',
-      caption='The pattern holds for recent and older games: it is not an age effect')
+      caption='Among recent games, the cheapest band still trails only in Adventure, Indie and Casual')
 
 # What this doesn't answer ---------------------------------------------------------------
 heading("What this analysis doesn't answer", level=2)

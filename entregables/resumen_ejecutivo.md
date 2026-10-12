@@ -23,11 +23,11 @@ so games from different years could be compared on equal footing.
 
 ## Main finding
 
-**The cheapest price band gets, across all 10 genres without exception, the worst reception.**
-The best reception isn't at the highest possible price, but in a mid-to-high range
-(approximately $6-$12 adjusted, depending on genre).
+**The cheapest price band is never the best-received, in any of the 10 genres, and in 9 of them
+it is the worst.** The best reception isn't always at the highest price either: depending on the
+genre, it sits in the mid-to-high range ($6.46-$12.36 adjusted) or above it.
 
-![The cheapest band has the worst reception across all 10 Steam genres](../salidas/graficos/01_q1_vs_mejor_franja.png)
+![The cheapest band is never the best-received in any Steam genre](../salidas/graficos/01_q1_vs_mejor_franja.png)
 
 The difference is real but moderate: between 2.5 and 5 percentage points of improvement moving
 from the cheapest band to each genre's best band. Not a dramatic effect, but a consistent one
@@ -55,11 +55,12 @@ or rule it out.
 
 ## Is this just an effect of cheap games being older?
 
-No. We repeated the analysis splitting recent games from older ones, and the pattern holds the
-same in both groups: the cheapest band remains the worst-reception one, regardless of the game's
-age.
+In part. We repeated the analysis splitting recent games from older ones. Among older games, the
+cheapest band comes last in every genre with enough data. Among recent games it comes last only
+in Adventure, Indie and Casual — the same three genres we recommend — and in the rest the gap
+mostly closes.
 
-![The pattern holds for recent and older games: it is not an age effect](../salidas/graficos/04_control_antiguedad.png)
+![Among recent games, the cheapest band still trails only in Adventure, Indie and Casual](../salidas/graficos/04_control_antiguedad.png)
 
 ## What this analysis doesn't answer
 

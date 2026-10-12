@@ -247,17 +247,19 @@ is documented instead of applying it silently.
   - 99,085 paid games, 18,345 F2P (Price = 0). 10,479 games pass the ≥500-review filter.
 
 - **Analysis base and quartiles:** paid filter (`Price > 0`) + ≥500 reviews → 9,048 games (23,822
-  game-genre rows after exploding by real genre). Quartiles of `precio_ajustado_usd` calculated
+  game-genre rows after exploding by real genre; 8,998 games carry at least one of the 10 real
+  genres, and those are the games behind the genre tables and figures). Quartiles of `precio_ajustado_usd` calculated
   on that base: **Q1 ≤ $3.25 · Q2 $3.25-$6.46 · Q3 $6.46-$12.36 · Q4 > $12.36**.
 
 - **Findings:**
-  1. **The cheapest band (Q1) is systematically the worst-reception band across all 10 genres.**
-     Median % positive reviews in Q1 ranges from 76.0% (Massively Multiplayer) to 86.3% (Casual),
-     always the lowest or tied-lowest of the 4 bands in its genre
-     (`salidas/tablas/genero_x_franja_precio.csv`).
+  1. **The cheapest band (Q1) is never the best-reception band, in any of the 10 genres, and it
+     is the worst in 9 of them.** Median % positive reviews in Q1 ranges from 76.0% (Massively
+     Multiplayer) to 86.3% (Casual). The exception is Massively Multiplayer, where Q1 comes second,
+     ahead of Q3 and Q4 (`salidas/tablas/genero_x_franja_precio.csv`). *(Corrected 2026-10-11, see the decision log.)*
   2. **The best reception clusters at Q3 ($6.46-$12.36) or Q4 (>$12.36), not the highest price
      overall.** In Action, Indie, Simulation, Casual and Strategy the peak is Q3; in Adventure,
-     Racing, Sports and RPG it's Q4. No genre has its best reception in Q1 or Q2.
+     Racing, Sports and RPG it's Q4; in Massively Multiplayer, Q2. No genre has its best reception
+     in Q1. *(Corrected 2026-10-11, see the decision log.)*
   3. **Moderate and consistent effect size:** the gap between Q1 and the best band ranges from
      2.50 p.p. (RPG) to 5.04 p.p. (Adventure). It's a real but not dramatic difference — it
      doesn't support a "price alone doubles reception" claim, only a directional pattern.
@@ -278,11 +280,13 @@ is documented instead of applying it silently.
      `pivot_table` instead of `groupby.agg`; matches point for point (spot-check Action × Q3:
      86.64% both ways).
   3. **Age as a confounder:** correlation of `antiguedad_anios` vs `pct_resenas_positivas` =
-     -0.087 (practically null) — age doesn't explain the price pattern. Documented that
-     correlation doesn't imply causation.
-  4. **Age control:** the table was repeated splitting recent games (≤ median age) from older
-     ones, for Action/Adventure/Indie/Casual. The "Q1 is worst" pattern holds in both bands — not
-     an artefact of cheap games simply being older.
+     -0.087 (weak). On its own this does not settle whether age drives the price pattern; check
+     4 is the one that answers it. Documented that correlation doesn't imply causation. *(Corrected 2026-10-11, see the decision log.)*
+  4. **Age control:** the table was repeated splitting recent games (≤ median age, 6 years) from
+     older ones, over all 10 genres (bands with n ≥ 20). Among older games Q1 comes last in all 9
+     genres with enough data; among recent games only in Adventure, Indie and Casual, and in RPG
+     and Sports Q1 edges ahead by 1 point or less. Age explains part of the pattern: it is solid
+     for older games and, for recent ones, limited to three genres. *(Corrected 2026-10-11, see the decision log.)*
   5. **Effect size quantified:** see finding 3 (2.50-5.04 p.p.), not just direction.
   6. **Manual recalculation of `pct_resenas_positivas`** on 5 random games
      (`Positive/(Positive+Negative)×100`) — matches the precomputed column exactly in all 5
@@ -332,14 +336,15 @@ is documented instead of applying it silently.
 - **Visualisations** (spotlighting: 4 of the 5 Phase 4 findings carry the argument; the fifth —
   Massively Multiplayer, weak evidence — is documented in text, not charted separately). Files in
   `salidas/graficos/`, generated with `notebooks/graficos.py`:
-  1. `01_q1_vs_mejor_franja.png` — *"The cheapest price band has the worst reception in every
-     Steam genre"* (grouped bars, Q1 vs. best band, sorted by effect).
+  1. `01_q1_vs_mejor_franja.png` — *"The cheapest price band is never the best-received in any
+     Steam genre"* (dumbbell, Q1 vs. best band, sorted by effect). *(Corrected 2026-10-11, see the decision log.)*
   2. `02_heatmap_genero_franja.png` — *"The best reception clusters at mid-to-high prices (Q3/Q4),
      never the cheapest"* (heatmap, genre × band).
   3. `03_ranking_efecto_candidatos.png` — *"Adventure, Indie and Casual combine the best effect,
      volume and absolute reception"* (effect ranking, candidates highlighted).
-  4. `04_control_antiguedad.png` — *"The pattern holds for both recent and older games: it is not
-     an age effect"* (grouped bars by age band, 4 genres).
+  4. `04_control_antiguedad.png` — *"Among recent games, the cheapest band still trails only in
+     Adventure, Indie and Casual"* (dot strips, older vs. recent, all 10 genres; rows shaded where
+     Q1 comes last). *(Corrected 2026-10-11, see the decision log.)*
   - Design checklist applied to all 4: bar axis starts at zero, one lead colour (blue) with grey
     for context, sorted by value, source note in the footer, alt text written for every figure
     (see notebook), no 3D elements.
@@ -377,8 +382,8 @@ is documented instead of applying it silently.
 
 | # | Action | Evidence | Impact | Effort | Priority |
 |---|---|---|---|---|---|
-| R1 | Concentrate next cycle's due diligence on Adventure, Indie and Casual | The 3 highest reception medians (86.2 / 86.7 / 88.2%) + band effect of 3.31-5.04 p.p. + volume (4,030 / 5,561 / 2,230 games) | High — reallocates effort across 49.6% of the analysed base; **not** a financial impact | Low | 1 |
-| R2 | Add the catalogue's price-quartile position to screening; flag >50% in Q1 | Q1 is the worst median band across all 10 genres (76.0-86.3%); survives the age control | Medium — effect of 2.50-5.04 p.p., which is why it's a warning signal, not a disqualifying criterion | Low | 2 |
+| R1 | Concentrate next cycle's due diligence on Adventure, Indie and Casual | The 3 highest reception medians (86.2 / 86.7 / 88.2%) + band effect of 3.31-5.04 p.p. + volume (4,030 / 5,561 / 2,230 games) + the only three genres where the pattern survives among recent games | High — reallocates effort across 49.6% of the analysed base; **not** a financial impact | Low | 1 |
+| R2 | Add the catalogue's price-quartile position to screening; flag >50% in Q1 | Q1 is never the best median band and is the worst in 9 of 10 genres (76.0-86.3%); the signal is clearest among older catalogues (corrected 2026-10-11) | Medium — effect of 2.50-5.04 p.p., which is why it's a warning signal, not a disqualifying criterion | Low | 2 |
 | R3 | Deprioritise Massively Multiplayer this cycle; Sports and Racing as "insufficient evidence" | MMO: 76.4% median, non-monotonic pattern, n=176. Sports n=329, Racing n=338, below the n<350 threshold from check 7 | Medium — frees up 3.5% of the base | Low | 3 |
 
   Each card also includes a success metric with a deadline and the critical risk/assumption. The
@@ -478,3 +483,6 @@ before this case can be called fully closed (see Phase 6 exit gate)
 | 2026-08-10 | Translate the full case repository (CASO.md, log, source records, deliverables) to English | The site is English-only; a visitor reaching the repo from the site would otherwise hit a language switch mid-evidence-chain | Keeping the repo in Spanish and only translating the site's L2 page |
 | 2026-08-10 | Regenerate the 4 charts with English text before publishing | A Spanish chart on an English page is the most visible inconsistency the site could ship with | Publishing the English page with the original Spanish charts and a note |
 | 2026-08-10 | Rewrite README.md as a short abstract linking to the site, instead of duplicating the full narrative | The full story now lives on the site (L2); a second full copy in the repo would drift out of sync with it over time | Keeping the long-form README as the primary narrative surface |
+| 2026-10-11 | Correct two overstatements in the published findings: "Q1 is the worst band in all 10 genres" becomes "never the best in any genre, the worst in 9" (Massively Multiplayer's Q1 comes second); "not an age effect" becomes "age explains part of it" (Q1 last in 9 of 9 genres among older games, in 3 of 9 among recent ones) | Both surfaced while making the video, when the data behind each scene was recomputed over all 10 genres instead of the 4 the age check had used. The recommendation stands, and is stronger: Adventure, Indie and Casual are the three genres where the pattern survives among recent games | Leaving the published wording and noting the nuance only in this log |
+| 2026-10-11 | Redesign figure 04 as dot strips over all 10 genres, older vs. recent | Grouped bars from zero, 4 genres, hid differences of 1-4 points and compared recent with older instead of Q1 with the other bands, which is what the finding is about | Keeping the bars with the new headline |
+| 2026-10-11 | State both analysis bases: 9,048 paid games with ≥500 reviews, 8,998 of them with a real genre | The page said 9,048 and every figure 8,998, with no explanation of the 50-game gap | Picking one number and dropping the other |

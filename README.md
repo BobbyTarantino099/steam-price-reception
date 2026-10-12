@@ -1,13 +1,16 @@
-# On Steam, the cheapest price band has the worst reception across all 10 genres
+# On Steam, the cheapest price band is never the best-received, in any of 10 genres
 
-> Games priced under a real $3.25 systematically get the worst reception in their genre. The
-> best reception sits at $6.46-$12.36 — never the cheapest, and not always the most expensive
-> either.
+> Across 10 Steam genres, games priced under a real $3.25 never get the best reception, and in 9
+> of them they get the worst. The pattern is clearest among older games; among recent ones it
+> holds only in Adventure, Indie and Casual.
 
 `Python` `pandas` `matplotlib` `125,855 games` `2 sources combined`
 
 **Full case, findings and recommendations →
 [juanesportfolio.com/cases/steam-price-reception](https://juanesportfolio.com/cases/steam-price-reception/)**
+
+**The case in 68 seconds →** [video on YouTube](https://youtu.be/zHiZ3W4nJxE), and
+[how it is made](video/README.md).
 
 This repository is the case's evidence layer: the full phase-by-phase log, the cleaning log,
 source records, reproducible scripts, and the technical notebook. The narrative — context, data,

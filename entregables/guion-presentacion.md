@@ -23,8 +23,8 @@ not recitation.
 | Hook | "I analysed 125,855 games on Steam to answer a question an investment fund would actually ask: which genre is worth prioritising for due diligence." | 20s |
 | Context | "They had more candidates than filters — too many studios, no data-driven way to narrow the list." | 20s |
 | Question | "So I asked: which genre and price-band combinations get the most consistent good reception, once you control for how old the game is?" | 20s |
-| Main finding | "The answer surprised me a little: the cheapest games are the worst-received ones, in every single genre. Not a few — all ten. And the best reception isn't at the top price either, it's in the middle-upper range." | 40s |
-| The check that matters | "The obvious objection is that cheap games are just old games. I checked — the correlation between age and reception is basically zero. The pattern holds whether the game is new or old." | 30s |
+| Main finding | "The answer surprised me a little: the cheapest band is never the best-received, in any genre. Not most of them — all ten. In nine it's the worst. And the best reception isn't always at the top price either." | 40s |
+| The check that matters | "The obvious objection is that cheap games are just old games. I checked, and it's partly right. Among older games, the cheapest band comes last everywhere. Among recent ones, only in three genres: Adventure, Indie and Casual — the same three I ended up recommending." | 30s |
 | Recommendation | "So I recommended the fund concentrate due diligence on three genres — Adventure, Indie, Casual — that combine the strongest effect, the most evidence, and the best absolute reception." | 25s |
 | Limitation | "One thing I was careful to say plainly: this is correlation, not proof that raising a price improves reviews. Without revenue data, the honest claim is 'here's where to look first,' not 'here's where to invest.'" | 25s |
 | Close | "The part I'm proudest of isn't the finding — it's that I reported the genre that *didn't* fit the story, Massively Multiplayer, as insufficient evidence instead of leaving it out." | 20s |

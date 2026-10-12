@@ -187,9 +187,10 @@ def figura(titular, subtitulo=None, periodo=None, fuente=None, nota=None,
 
         Mide el alto real del texto ya compuesto en vez de estimarlo a partir
         del número de caracteres: `textwrap` ya sabe cuántas líneas salieron, y
-        el renderizador sabe cuánto ocupan.
+        el renderizador sabe cuánto ocupan. No corta en guiones: "best-received"
+        partido al final de una línea se lee como dos palabras.
         """
-        t = fig.text(izquierda, y, "\n".join(textwrap.wrap(texto, width=ancho)),
+        t = fig.text(izquierda, y, "\n".join(textwrap.wrap(texto, width=ancho, break_on_hyphens=False)),
                      va="top", ha="left", color=color, linespacing=interlineado,
                      **_prop(peso, tam))
         caja = t.get_window_extent(renderer=fig.canvas.get_renderer())

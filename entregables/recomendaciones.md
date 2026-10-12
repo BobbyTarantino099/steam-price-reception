@@ -13,8 +13,8 @@ historical catalogue. Tables: `salidas/tablas/genero_x_franja_precio.csv` and
 
 | Finding (Phase 4) | Insight (what it means for the fund) | Recommendation |
 |---|---|---|
-| The cheapest band (Q1, ≤$3.25 real) has the worst reception across all 10 genres | Low price doesn't buy reception; on Steam it works more as a signal of a low-budget product than a lever for adoption | R2 — use the catalogue's price position as a screening filter |
-| The best reception clusters at Q3 ($6.46-$12.36) or Q4 (>$12.36), never Q1 or Q2 | There's a defensible "price zone"; studios already operating in it have a validated price-product fit | R1 and R2 |
+| The cheapest band (Q1, ≤$3.25 real) is never the best-received in any of the 10 genres, and is the worst in 9 (Massively Multiplayer is the exception) | Low price doesn't buy reception; on Steam it works more as a signal of a low-budget product than a lever for adoption | R2 — use the catalogue's price position as a screening filter |
+| The best reception clusters at Q3 ($6.46-$12.36) or Q4 (>$12.36), never Q1; only Massively Multiplayer peaks at Q2 | There's a defensible "price zone"; studios already operating in it have a validated price-product fit | R1 and R2 |
 | Adventure, Indie and Casual combine the best band effect, volume and absolute reception | These are the genres where the "mid-to-high price + good reception" thesis has the most support and the most available targets to invest in | R1 — concentrate due diligence there |
 | Massively Multiplayer has the worst reception of the 10 genres (76.4% median), a non-monotonic pattern and n=176 | Not a "no", it's an "we don't know with this data"; committing due-diligence hours there is expensive and poorly informed | R3 — deprioritise this cycle |
 
@@ -58,10 +58,12 @@ historical catalogue. Tables: `salidas/tablas/genero_x_franja_precio.csv` and
   Q4 >$12.36 real 2026 dollars). A studio with more than half its catalogue in Q1 is flagged for
   explicit review before proceeding. Owner: origination analyst. Deadline: incorporate it into the
   form before opening the next long list.
-- **Evidence:** Q1 is the worst-median-reception band across all 10 genres without exception, with
-  medians ranging from 76.0% (Massively Multiplayer) to 86.3% (Casual), always the lowest or
-  tied-lowest in its genre. The pattern holds when splitting recent from older games (check 4,
-  `notebooks/verificar.py`), and age doesn't explain it (age × reception correlation = -0.087).
+- **Evidence:** Q1 is never the best-median-reception band in any of the 10 genres, and it is
+  the worst in 9, with medians ranging from 76.0% (Massively Multiplayer) to 86.3% (Casual).
+  Splitting recent from older games (check 4, `notebooks/verificar.py`), Q1 comes last in all 9
+  genres with enough data among older games, but only in Adventure, Indie and Casual among recent
+  ones. The signal is therefore clearest for studios with older catalogues; for a young catalogue
+  it carries weight only in those three genres.
 - **Expected impact:** the band effect is 2.50 to 5.04 p.p. of positive reviews. It's a real but
   moderate difference. **Explicit assumption:** that's why this field is used as a warning signal
   that triggers review, not an automatic disqualifying criterion — the effect size doesn't justify
@@ -123,7 +125,8 @@ analysis can support: with aggregated reviews and no revenue data, the honest re
 1. **No causality.** The "mid-to-high price → better reception" pattern is a descriptive
    correlation. The strongest alternative reading — selection: studios who charge more also
    invest more in production — cannot be ruled out with this data. What was ruled out with
-   evidence is that the pattern is an age artefact (correlation -0.087 and age-band control).
+   tested with evidence is game age, and it explains part of the pattern: among recent games it
+   holds only in Adventure, Indie and Casual (age-band control, check 4).
 2. **No revenue or sales data.** `estimated_owners` comes in SteamSpy-estimated ranges, not
    Valve-confirmed, and was not used as an analysis metric. So the case says nothing about
    profitability, only about public reception.

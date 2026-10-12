@@ -8,17 +8,17 @@ content — the site's home-page card (L1) is generated from `index.md`'s front-
 
 ## LinkedIn post
 
-> ### On Steam, the cheapest price band has the worst reception across all 10 genres
+> ### On Steam, the cheapest price band is never the best-received, in any of 10 genres
 >
 > ![](../salidas/graficos/01_q1_vs_mejor_franja.png)
 >
 > I analysed Steam's historical catalogue — 125,855 games — with Python and pandas to answer a
 > question from an investment fund: which genre is worth prioritising for due diligence. I
 > combined the catalogue with the BLS CPI-U index to compare 29 years of prices in real dollars,
-> and found that games under $3.25 have the worst reception in their genre with no exception,
-> while the peak clusters at $6.46-$12.36 and never at the highest price. I checked that it wasn't
-> a simple age effect — the obvious objection — and it isn't. I recommended concentrating due
-> diligence on Adventure, Indie and Casual, and stated plainly that without revenue data this says
+> and found that games under $3.25 never get the best reception in their genre, and in 9 of 10
+> genres they get the worst. I checked the obvious objection — that cheap games are just old
+> games — and it is partly right: among recent games the pattern holds only in Adventure, Indie
+> and Casual. Those are the three genres I recommended for due diligence, and stated plainly that without revenue data this says
 > where to look, not where to put the money.
 >
 > `Python` `pandas` `matplotlib` `2 sources combined` `125,855 games`
@@ -26,22 +26,22 @@ content — the site's home-page card (L1) is generated from `index.md`'s front-
 
 ## Short version (LinkedIn, CV)
 
-> **On Steam, the cheapest price band has the worst reception across all 10 genres.** I analysed
-> 125,855 games with Python and pandas, adjusting prices for inflation with the BLS CPI-U, and
-> found the reception peak sits at $6.46-$12.36 real — never the cheapest, not always the most
-> expensive either. Basis for a due-diligence prioritisation recommendation for an investment
+> **On Steam, the cheapest price band is never the best-received, in any of 10 genres.** I
+> analysed 125,855 games with Python and pandas, adjusting prices for inflation with the BLS
+> CPI-U, and found the cheapest band is the worst in 9 of the 10 genres, with the pattern clearest
+> among older games. Basis for a due-diligence prioritisation recommendation for an investment
 > fund: Adventure, Indie and Casual.
 
 ## One-sentence version (15 seconds)
 
-> On Steam, cheap doesn't buy good reception: the lowest price band is the worst in its genre
-> across all ten genres, and the peak sits at $6.46-$12.36 real.
+> On Steam, cheap doesn't buy good reception: the lowest price band is never the best in any of
+> ten genres, and the worst in nine.
 
 ## CV line
 
 > Analysed 125,855 Steam games combined with the CPI-U index to identify the price/reception
-> pattern by genre; the result — the cheapest band has the worst reception across all 10 genres,
-> with a 2.5-5.0 p.p. effect — was the basis for a due-diligence prioritisation recommendation
+> pattern by genre; the result — the cheapest band is never the best-received in any of 10
+> genres, with a 2.5-5.0 p.p. gap to the best band — was the basis for a due-diligence prioritisation recommendation
 > for an investment fund.
 
 ---

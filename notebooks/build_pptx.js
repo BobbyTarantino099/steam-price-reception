@@ -112,16 +112,16 @@ function addFooter(slide, texto) {
 const hallazgos = [
   {
     num: '1',
-    titulo: 'The cheapest band has the worst reception, across all 10 genres without exception',
+    titulo: 'The cheapest band is never the best-received, in any of the 10 genres',
     img: GRAFICOS + '01_q1_vs_mejor_franja.png',
-    interpretacion: 'In each of the 10 real game genres, the cheapest price band (≤$3.25 adjusted) gets the lowest median % of positive reviews. The improvement moving to the best band ranges from +2.5 to +5.0 percentage points.',
-    notas: 'Three-part filter: the practical question is which price band suits each genre; the data shows Q1 is systematically lowest; the chart confirms it visually, bar by bar.',
+    interpretacion: 'In none of the 10 real game genres is the cheapest price band (≤$3.25 adjusted) the best-received, and in 9 it gets the lowest median % of positive reviews; the exception is Massively Multiplayer. The improvement moving to the best band ranges from +2.5 to +5.0 percentage points.',
+    notas: 'Three-part filter: the practical question is which price band suits each genre; the data shows Q1 never wins and is almost always lowest; the chart shows the gap genre by genre.',
   },
   {
     num: '2',
     titulo: 'The best reception clusters at mid-to-high prices, not at the expensive extreme',
     img: GRAFICOS + '02_heatmap_genero_franja.png',
-    interpretacion: 'The heatmap shows the reception peak is at Q3 ($6.46-$12.36) or Q4, depending on genre — never Q1 or Q2. There is no simple linear "more expensive is always better" relationship.',
+    interpretacion: 'The heatmap shows the reception peak is at Q3 ($6.46-$12.36) or Q4, depending on genre (Q2 only in Massively Multiplayer) — never Q1. There is no simple linear "more expensive is always better" relationship.',
     notas: 'Recalculated via an alternate path (pivot_table) and matches groupby.agg. This rules out a calculation error behind the pattern.',
   },
   {
@@ -133,10 +133,10 @@ const hallazgos = [
   },
   {
     num: '4',
-    titulo: "The pattern is not an artefact of the game's age",
+    titulo: 'Age explains part of it: among recent games, the pattern holds in three genres',
     img: GRAFICOS + '04_control_antiguedad.png',
-    interpretacion: 'We split recent games from older ones: across the four reference genres, Q1 remains the weakest band in both groups. The correlation between age and % positive reviews is just -0.087.',
-    notas: 'This is the key check against the most obvious alternative interpretation: that cheap games have simply been on the market longer and accumulated more negative reviews because of that.',
+    interpretacion: 'We split games at the median age (6 years). Among older games, Q1 comes last in all 9 genres with enough data. Among recent ones, only in Adventure, Indie and Casual — the same three we recommend.',
+    notas: 'This is the key check against the most obvious alternative interpretation: that cheap games are simply older. It turned out partly right, which narrows the finding for recent games and strengthens the recommendation.',
   },
 ];
 

@@ -58,7 +58,7 @@ f1 = pd.DataFrame(filas).sort_values('dif', ascending=False)
 # distancia, que es exactamente lo que dice el hallazgo.
 # =================================================================
 fig, ax = estilo.figura(
-    titular='The cheapest price band has the worst reception in every Steam genre',
+    titular='The cheapest price band is never the best-received in any Steam genre',
     subtitulo="Median share of positive reviews: cheapest band vs. the genre's best band",
     periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(9.2, 6.8),
     izquierda=0.175,
@@ -138,49 +138,101 @@ ax.text(0.12, 0.52, 'Highest effect, and 4,030 games of evidence',
 estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/03_ranking_efecto_candidatos.png')
 
 # =================================================================
-# FIGURA 4 - Control por antiguedad, small multiples
+# FIGURA 4 - Control por antiguedad: tiras de puntos, viejos vs recientes
 # =================================================================
+# Antes eran barras agrupadas desde cero, en cuatro generos: con diferencias
+# de 1 a 4 puntos sobre un eje de 0 a 100 todas las barras median lo mismo, y
+# el ojo comparaba reciente contra viejo, no Q1 contra las otras franjas, que
+# es lo que dice el hallazgo. Ahora cada fila es una tira de puntos en una
+# escala corta: Q1 en gris, las otras tres en azul, y la fila se sombrea donde
+# Q1 queda ultima. Los diez generos, como en la escena 4 del video.
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 mediana_antig = base['antiguedad_anios'].median()
 base['banda'] = np.where(base['antiguedad_anios'] <= mediana_antig, 'Recent', 'Older')
-generos_fig4 = ['Adventure', 'Indie', 'Casual', 'Action']
-sub4 = base[base['Genres'].isin(generos_fig4)]
-tabla4 = (sub4.groupby(['Genres', 'banda', 'franja_precio'], observed=True)
+tabla4 = (base.groupby(['Genres', 'banda', 'franja_precio'], observed=True)
           .agg(n=('AppID', 'count'), mediana_pct=('pct_resenas_positivas', 'median'))
           .reset_index())
 tabla4 = tabla4[tabla4['n'] >= 20]
 
+def tira(genero, banda):
+    """Medianas de las cuatro franjas, o None si alguna tiene menos de 20 juegos."""
+    m = (tabla4[(tabla4['Genres'] == genero) & (tabla4['banda'] == banda)]
+         .set_index('franja_precio')['mediana_pct'])
+    return m if len(m) == 4 else None
+
+def q1_ultima(m):
+    return m is not None and m.iloc[0] == m.min()
+
+# Arriba los generos donde el patron resiste en ambos grupos; luego el resto;
+# al final los que no tienen datos suficientes.
+generos4 = sorted(base['Genres'].unique())
+resisten = [g for g in generos4 if q1_ultima(tira(g, 'Recent'))]
+sin_datos = [g for g in generos4 if tira(g, 'Recent') is None or tira(g, 'Older') is None]
+generos4 = resisten + [g for g in generos4 if g not in resisten + sin_datos] + sin_datos
+assert resisten == ['Adventure', 'Casual', 'Indie'], 'cambio el resultado: revisar titular y hallazgo 4'
+
 fig, ax_madre = estilo.figura(
-    titular='The pattern holds for recent and older games alike: it is not an age effect',
-    subtitulo='Median share of positive reviews by price band, splitting games at the median age',
-    periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(10.4, 6.2),
-    izquierda=0.07, abajo=0.17,
+    titular='Among recent games, the cheapest band still trails only in Adventure, Indie and Casual',
+    subtitulo=f'Median share of positive reviews by price band, splitting games at the median age '
+              f'({mediana_antig:.0f} years)',
+    periodo=PERIODO, fuente=FUENTE, nota=NOTA, figsize=(10.4, 7.4),
+    izquierda=0.175, abajo=0.2,
 )
 caja = ax_madre.get_position()
 ax_madre.remove()
-ejes = fig.subplots(1, 4, sharey=True, gridspec_kw=dict(
-    left=caja.x0, right=caja.x1, bottom=caja.y0, top=caja.y1, wspace=0.16))
+ejes = fig.subplots(1, 2, sharey=True, gridspec_kw=dict(
+    # El techo baja lo que ocupan el titulo de cada panel y su recuento: sin eso
+    # se montaban sobre la linea de periodo de la cabecera.
+    left=caja.x0, right=caja.x1, bottom=caja.y0, top=caja.y1 - 0.075, wspace=0.08))
 
-for ax, genero in zip(ejes, generos_fig4):
-    d = tabla4[tabla4['Genres'] == genero]
-    for banda, color, off in [('Recent', estilo.ACENTO, -0.19), ('Older', estilo.CONTEXTO, 0.19)]:
-        dd = d[d['banda'] == banda].set_index('franja_precio').reindex(etiquetas)
-        ax.bar(np.arange(len(etiquetas)) + off, dd['mediana_pct'], width=0.36,
-               color=color, label=banda, zorder=2)
-    ax.set_xticks(np.arange(len(etiquetas)))
-    ax.set_xticklabels(['Q1', 'Q2', 'Q3', 'Q4'])
-    ax.set_title(genero, color=estilo.TINTA, pad=8, **estilo._prop('medio', 11))
-    ax.set_ylim(0, 100)
-    ax.grid(axis='y', zorder=0)
+V0, V1 = 77, 93
+for ax, banda, nombre in [(ejes[0], 'Older', f'Older games (over {mediana_antig:.0f} years)'),
+                          (ejes[1], 'Recent', f'Recent games ({mediana_antig:.0f} years or less)')]:
+    ultimas = 0
+    con_datos = 0
+    for i, genero in enumerate(generos4):
+        m = tira(genero, banda)
+        if m is None:
+            ax.text(V0 + 0.3, i, 'too few games in some bands', va='center', ha='left',
+                    color=estilo.TINTA_TENUE, style='italic', **estilo._prop('regular', 8.5))
+            continue
+        con_datos += 1
+        if q1_ultima(m):
+            ultimas += 1
+            ax.axhspan(i - 0.42, i + 0.42, color=estilo.RAMPA[0], zorder=0, lw=0)
+        ax.plot([V0 + 0.3, V1 - 0.3], [i, i], color=estilo.REGLA, lw=1.2, zorder=1)
+        ax.scatter(m.iloc[1:], [i] * 3, s=34, color=estilo.ACENTO, zorder=2,
+                   edgecolor=estilo.PAPEL, linewidth=0.8)
+        ax.scatter([m.iloc[0]], [i], s=90, color=estilo.CONTEXTO, zorder=3,
+                   edgecolor=estilo.PAPEL, linewidth=1.2)
+    ax.set_title(nombre, color=estilo.TINTA, pad=22, loc='left', **estilo._prop('medio', 11))
+    ax.text(0, 1.012, f'Cheapest band last in {ultimas} of {con_datos} genres', transform=ax.transAxes,
+            va='bottom', ha='left', color=estilo.TINTA_SUAVE, **estilo._prop('regular', 9.5))
+    ax.set_xlim(V0, V1)
+    ax.set_xticks([80, 85, 90])
+    ax.set_xticklabels(['80%', '85%', '90%'])
+    ax.grid(axis='x', zorder=0)
     ax.set_axisbelow(True)
-    ax.spines['left'].set_visible(False)
+    ax.tick_params(axis='y', length=0)
+    for lado in ('left', 'top', 'right'):
+        ax.spines[lado].set_visible(False)
 
-ejes[0].set_ylabel('Median % positive reviews')
-# Los cuatro paneles comparten eje Y, asi que abrir hueco en el primero lo abre
-# en todos. Las barras arrancan en cero y llegan a ~89 de 100: sin holgura no
-# hay un solo rincon libre y la leyenda acababa entre las barras de Q1.
-estilo.leyenda(ejes[0])
+ejes[0].set_yticks(range(len(generos4)))
+ejes[0].set_yticklabels(generos4)
+ejes[0].set_ylim(len(generos4) - 0.5, -0.5)
+
+marcas = [
+    Line2D([], [], ls='', marker='o', ms=9, color=estilo.CONTEXTO, label='Cheapest band (Q1)'),
+    Line2D([], [], ls='', marker='o', ms=6, color=estilo.ACENTO, label='The other three bands'),
+    Patch(color=estilo.RAMPA[0], label='Cheapest band comes last'),
+]
+leg = ejes[0].legend(handles=marcas, loc='upper left', bbox_to_anchor=(0, -0.07), ncol=3,
+                     frameon=False, handletextpad=0.5, columnspacing=1.8)
+for t in leg.get_texts():
+    t.set_color(estilo.TINTA_SUAVE)
 estilo.guardar(fig, f'{RUTA_BASE}/salidas/graficos/04_control_antiguedad.png')
 
 print('Figuras generadas:')
